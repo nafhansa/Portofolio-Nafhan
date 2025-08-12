@@ -134,7 +134,7 @@ section{ scroll-margin-top: 96px; }
 
 /* CTA PNG buttons */
 .hero__cta{
-  margin-top: clamp(40px, 5vw, 64px);
+  margin-top: clamp(30px, 4vw, 64px);
   display:flex; justify-content:center; gap:clamp(16px, 3vw, 28px); flex-wrap:wrap;
 }
 .btn-img{ display:inline-block; cursor:pointer; }
