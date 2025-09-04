@@ -433,3 +433,194 @@ section{ scroll-margin-top: 96px; }
     margin: 0;
   }
 }
+
+/* === Projects: uniform sizing & layout (added by assistant) === */
+.projects__grid{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(280px, 1fr));
+  gap: 24px;
+  align-items: stretch;
+}
+
+.project-card{
+  position: relative;
+  display: block;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #0d0d0d;
+  /* keep all cards the same height/ratio */
+  aspect-ratio: 16 / 9;
+}
+
+.project-card__thumb{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* keep meta fixed at bottom with gentle overlay */
+.project-card__meta{
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: linear-gradient(to top, rgba(0,0,0,.65), rgba(0,0,0,0));
+}
+
+.meta__label{ font-size: 12px; letter-spacing: .08em; }
+.meta__title{ font-size: 16px; font-weight: 700; }
+.meta__icon{ font-size: 20px; transform: translateY(-1px); }
+
+/* Fallback for very old browsers without aspect-ratio support */
+@supports not (aspect-ratio: 1) {
+  .project-card::before { content: ""; float: left; padding-top: 56.25%; }
+  .project-card::after { content: ""; display: block; clear: both; }
+  .project-card__thumb { position: absolute; inset: 0; }
+  .project-card__meta { position: absolute; left: 0; right: 0; bottom: 0; }
+}
+
+/* Optional: widen on very large screens but keep 2 columns to preserve sizing "like before" */
+@media (min-width: 1440px){
+  .projects__grid{
+    grid-template-columns: repeat(2, minmax(360px, 1fr));
+    gap: 28px;
+  }
+}
+
+
+/* === Entrance & Scroll Reveal (added by assistant) ======================= */
+:root{
+  --reveal-duration: 480ms;
+  --reveal-ease: cubic-bezier(.2,.7,.2,1);
+}
+
+.reveal{
+  opacity: 0;
+  transform: translateY(12px) scale(.98);
+  filter: saturate(.9);
+}
+
+.reveal--visible{
+  opacity: 1;
+  transform: none;
+  filter: none;
+  transition:
+    transform var(--reveal-duration) var(--reveal-ease) var(--stagger, 0ms),
+    opacity  var(--reveal-duration) var(--reveal-ease) var(--stagger, 0ms),
+    filter   var(--reveal-duration) var(--reveal-ease) var(--stagger, 0ms);
+  will-change: transform, opacity;
+}
+
+/* Hero tweaks for a bit more punch */
+.hero .avatar.reveal{ transform: translateY(8px) scale(.92); }
+.hero .title.reveal{ transform: translateY(14px); }
+.hero .hero__desc.reveal{ transform: translateY(18px); }
+.hero .hero__cta .btn-img.reveal{ transform: translateY(12px) scale(.98); }
+.skills__list li.reveal{ transform: translateY(10px) scale(.98); }
+
+/* Project card micro-interaction */
+.project-card{
+  transition: transform 220ms ease, box-shadow 220ms ease;
+}
+.project-card:hover{
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(0,0,0,.25);
+}
+
+/* Accessibility: respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce){
+  .reveal,
+  .reveal--visible{
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    transition: none !important;
+  }
+  .project-card{ transition: none !important; }
+}
+/* ======================================================================= */
+
+
+/* === Page Intro (first-load entrance) — added by assistant ================= */
+:root{
+  --intro-ease: cubic-bezier(.2,.7,.2,1);
+}
+
+body.is-intro{ overflow: hidden; }
+
+.intro{
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  display: grid;
+  place-items: center;
+  background: #0b0b0b;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.intro--enter{
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 280ms var(--intro-ease);
+}
+
+.intro--exit{
+  opacity: 0;
+  transition: opacity 460ms var(--intro-ease);
+}
+
+.intro__brand{
+  text-align: center;
+  color: #fff;
+  opacity: 0;
+  transform: translateY(10px) scale(.98);
+}
+
+.intro--enter .intro__brand{
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 480ms var(--intro-ease) 80ms,
+    transform 480ms var(--intro-ease) 80ms;
+}
+
+.brand__top{
+  display: block;
+  font-family: "Plus Jakarta Sans", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  font-weight: 800;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  font-size: clamp(22px, 2.2vw, 32px);
+}
+
+.brand__sub{
+  display: block;
+  margin-top: 8px;
+  font-family: "Poppins", -apple-system, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  font-weight: 600;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  opacity: .8;
+  font-size: clamp(10px, 1.1vw, 14px);
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .intro,
+  .intro--enter,
+  .intro--exit{
+    opacity: 0 !important;
+    transition: none !important;
+  }
+  .intro__brand{
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+/* ========================================================================= */
