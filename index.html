@@ -11,274 +11,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Styles -->
-  <link rel="stylesheet" href="./style.css" />
-</head>
-<body>
-
-  <!-- Header (sticky) -->
-  <header class="header">
-    <div class="overlap-group">
-      <nav class="navbar" aria-label="Primary">
-        <a href="#home">Home</a>
-        <a href="#projects">Projects</a>
-        <a href="#certification">Certification</a>
-        <a href="#experience">Experience</a>
-        <a href="#contact">Contact</a>
-      </nav>
-      <img class="logo" src="./assets/icons/logo.png" alt="Nafhan logo" />
-    </div>
-  </header>
-
-  <main>
-    <!-- Hero -->
-    <section id="home" class="hero">
-      <div class="hero__inner">
-        <img src="./assets/images/pp.jpg" alt="Foto Nafhan Shafy" class="avatar" />
-
-        <h1 class="title">
-          I’m Nafhan<br>
-          <span class="nowrap">I love <span class="accent">hacking!!</span></span>
-        </h1>
-
-        <p class="hero__desc">
-          I’m a proactive ITB Information Systems and Technology student, holding a
-          Junior Penetration Tester certification and eager to leverage foundational
-          Cyber Security knowledge and practical skills.
-        </p>
-
-        <!-- CTA pakai PNG utuh -->
-        <div class="hero__cta">
-          <a
-          href="https://wa.me/6281234567890?text=Halo%20Nafhan%2C%20saya%20lihat%20portfolio%20kamu%20dan%20ingin%20ngobrol%20lebih%20lanjut."
-          class="btn-img"
-          target="_blank"
-          rel="noopener"
-          aria-label="WhatsApp: Get In Touch"
-          >
-          <img src="./assets/icons/get.png" alt="Get In Touch (WhatsApp)">
-          </a>
-
-          <!-- Download CV: buka di tab baru -->
-          <a
-            href="https://drive.google.com/file/d/1VnGp1hhjA46JtvP3cPfrbHlO29EuEfo_/view?usp=sharing"
-            class="btn-img"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Download CV (Google Drive, buka tab baru)"
-          >
-            <img src="./assets/icons/download.png" alt="Download CV">
-          </a>
-        </div>
-
-        <!-- Experience With -->
-        <div class="skills">
-          <p class="skills__title">EXPERIENCE WITH</p>
-
-          <ul class="skills__list" aria-label="Tech stack I have experience with">
-            <li class="skills__item">
-              <img src="./assets/icons/javascript.png" alt="JavaScript">
-            </li>
-            <li class="skills__item">
-              <img src="./assets/icons/nodejs.png" alt="Node.js / Next.js">
-            </li>
-            <li class="skills__item">
-              <img src="./assets/icons/html.png" alt="HTML5">
-            </li>
-            <li class="skills__item">
-              <img src="./assets/icons/css.png" alt="CSS3">
-            </li>
-            <li class="skills__item">
-              <img src="./assets/icons/reactjs.png" alt="React">
-            </li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== Projects ===== -->
-    <section id="projects" class="projects">
-      <h2 class="projects__title">PROJECTS</h2>
-
-      <div class="projects__grid">
-        <!-- Card 1: GitHub -->
-        <a class="project-card" href="https://github.com/nafhansa" target="_blank" rel="noopener">
-          <img class="project-card__thumb" src="./assets/images/pro1.png" alt="GitHub profile thumbnail">
-          <div class="project-card__meta">
-            <div class="meta__text">
-              <span class="meta__label">CLICK HERE TO VISIT</span>
-              <span class="meta__title">GITHUB REPO</span>
-            </div>
-            <span class="meta__icon" aria-hidden="true">↗</span>
-          </div>
-        </a>
-
-        <!-- Card 2: CTF writeups -->
-        <a class="project-card" href="https://renjana.gitbook.io/capturetheflag-pawned/" target="_blank" rel="noopener">
-          <img class="project-card__thumb" src="./assets/images/pro2.png" alt="CTF writeups thumbnail">
-          <div class="project-card__meta">
-            <div class="meta__text">
-              <span class="meta__label">CLICK HERE TO VISIT</span>
-              <span class="meta__title">CTF WRITEUPS</span>
-            </div>
-            <span class="meta__icon" aria-hidden="true">↗</span>
-          </div>
-        </a>
-      </div>
-    </section>
-
-    <!-- ===== Certification ===== -->
-    <section id="certification" class="cert">
-      <h2 class="cert__title">CERTIFICATION</h2>
-
-      <div class="cert__list">
-        <!-- Item 1 -->
-        <article class="cert__item">
-          <header class="cert__head">
-            <h3 class="cert__name">Junior Penetration Tester Path</h3>
-            <span class="cert__date">June – July 2024</span>
-          </header>
-          <p class="cert__desc">
-            I demonstrated foundational skills in ethical hacking, vulnerability assessment, and penetration testing
-            through labs and challenges. Using tools like Nmap, Metasploit, and Burp Suite, I applied reconnaissance
-            techniques and a systematic approach to uncover and exploit common web and network vulnerabilities.
-          </p>
-        </article>
-
-        <!-- Item 2 -->
-        <article class="cert__item">
-          <header class="cert__head">
-            <h3 class="cert__name">CS50’s Introduction to Cybersec</h3>
-            <span class="cert__date">May 2024 – Present</span>
-          </header>
-          <p class="cert__desc">
-            Since May 2024, I have been pursuing CS50's Introduction to Cybersecurity from Harvard University via edX,
-            actively engaging in modules like “Securing Systems.” This program has strengthened my understanding of
-            cybersecurity fundamentals and strategies to mitigate cyber threats.
-          </p>
-        </article>
-      </div>
-    </section>
-
-    <!-- ===== Experience ===== -->
-    <section id="experience" class="exp">
-      <h2 class="exp__title">EXPERIENCE</h2>
-
-      <div class="exp__list">
-        <!-- Item 1 -->
-        <article class="exp__item">
-          <header class="exp__head">
-            <h3 class="exp__role">SEA–Catering WebApp | Academy COMPFEST UI</h3>
-            <span class="exp__date">June 2025</span>
-          </header>
-          <p class="exp__desc">
-        I built responsive UI components using React.js with a focus on modularity and reusability, integrated API
-        endpoints for menu, authentication, and order management, and applied React Hooks for state management and
-        side effects. I styled components with CSS to align with branding, ensuring cross-device compatibility and
-        a seamless user flow for the ordering process.
-          </p>
-        </article>
-
-        <!-- Item 2 -->
-        <article class="exp__item">
-          <header class="exp__head">
-            <h3 class="exp__role">IoT System Development</h3>
-            <span class="exp__date">May – June 2025</span>
-          </header>
-          <p class="exp__desc">
-            I've developed automation logic for light detection, showcasing proficiency in hardware-software integration
-            and sensor data processing. This project provided practical experience in embedded system design, power
-            management, and a deeper understanding of system architecture.
-          </p>
-        </article>
-      </div>
-    </section>
-
-    <!-- ===== Feedback ===== -->
-    <section id="feedback" class="feedback">
-      <h2 class="feedback__title">FEEDBACK</h2>
-
-      <form class="feedback__form" action="#" method="post">
-        <textarea id="fb-message" name="message" placeholder="TYPE HERE"></textarea>
-
-        <div class="feedback__actions">
-          <button type="submit" class="feedback__submit">SUBMIT</button>
-        </div>
-      </form>
-
-      <!-- Daftar feedback tampil di sini -->
-      <div class="feedback__list" id="feedbackList" aria-live="polite"></div>
-      </section>
-
-      <script src="./main.js"></script>
-
-
-        <!-- Placeholder section berikutnya -->
-        <section id="experience" class="stub"></section>  
-  </main>
-    
-  <!-- ===== Contact / Footer ===== -->
-    <section id="contact" class="contact">
-      <div class="contact__inner">
-        <h2 class="contact__title">Contact</h2>
-
-        <p class="contact__desc">
-          In parallel, I have also developed strong skills in frontend development and UI/UX design,
-          building responsive, user-centric web interfaces using HTML, CSS, JavaScript, and React.
-          I am seeking a challenging opportunity, either in cybersecurity or frontend development,
-          where I can continue to grow and make a tangible impact through both secure and intuitive
-          digital solutions.
-        </p>
-
-        <!-- email -->
-        <a class="contact__email" href="mailto:nafhan1723@gmail.com">
-          <img src="./assets/icons/email.png" alt="Email" />
-          nafhan1723@gmail.com
-        </a>
-
-        <!-- social icons -->
-        <ul class="contact__social" aria-label="Social links">
-          <li>
-            <a href="https://www.instagram.com/nafhanshafy/" target="_blank" rel="noopener">
-              <img src="./assets/icons/instagram.png" alt="Instagram" />
-            </a>
-          </li>
-          <li>
-            <a href="https://x.com/basketbertangan" target="_blank" rel="noopener">
-              <img src="./assets/icons/x.png" alt="X (Twitter)" />
-            </a>
-          </li>
-          <li>
-            <a href="https://www.linkedin.com/in/nafhan-shafy-aulia-a95275307?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank" rel="noopener">
-              <img src="./assets/icons/linked.png" alt="YouTube" />
-            </a>
-          </li>
-        </ul>
-      </div>
-    </section>
-  
-    <!-- Device gate (muncul di HP/tablet) -->
-    <div class="device-gate" role="dialog" aria-modal="true" aria-labelledby="dg-title">
-      <div class="device-gate__inner">
-        <h2 id="dg-title">I'm Sorry! Display isn’t available on tablet or mobile.</h2>
-        <p>Please switch to a PC or desktop to continue.</p>
-      </div>
-    </div>
-</body>
-</html>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Nafhan — Portfolio</title>
-
-  <!-- Fonts: Inter (UI), Plus Jakarta Sans (nav), Poppins (title/desc) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-
-  <!-- Styles -->
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
@@ -373,7 +105,7 @@
           <img class="project-card__thumb" src="./assets/images/pro1.png" alt="GitHub profile thumbnail">
           <div class="project-card__meta">
             <div class="meta__text">
-              <span class="meta__label">CLICK HERE TO LOOK</span>
+              <span class="meta__label">CLICK HERE TO VISIT</span>
               <span class="meta__title">GITHUB REPO</span>
             </div>
             <span class="meta__icon" aria-hidden="true">↗</span>
@@ -385,7 +117,7 @@
           <img class="project-card__thumb" src="./assets/images/pro2.png" alt="CTF writeups thumbnail">
           <div class="project-card__meta">
             <div class="meta__text">
-              <span class="meta__label">CLICK HERE TO READ</span>
+              <span class="meta__label">CLICK HERE TO VISIT</span>
               <span class="meta__title">CTF WRITEUPS</span>
             </div>
             <span class="meta__icon" aria-hidden="true">↗</span>
@@ -398,8 +130,8 @@
           <img class="project-card__thumb" src="./assets/images/trufman.png" alt="Trufman project thumbnail" loading="lazy">
           <div class="project-card__meta">
             <div class="meta__text">
-              <span class="meta__label">CLICK HERE TO PLAY</span>
-              <span class="meta__title">TRUFMAN - CARD GAME</span>
+              <span class="meta__label">VISIT PROJECT</span>
+              <span class="meta__title">TRUFMAN</span>
             </div>
             <span class="meta__icon" aria-hidden="true">↗</span>
           </div>
@@ -411,8 +143,8 @@
           <img class="project-card__thumb" src="./assets/images/movie-dashboard.png" alt="Movie Dashboard project thumbnail" loading="lazy">
           <div class="project-card__meta">
             <div class="meta__text">
-              <span class="meta__label">CLICK HERE TO SEE</span>
-              <span class="meta__title">MOVIE DASHBOARD (DEMO)</span>
+              <span class="meta__label">LIVE DEMO</span>
+              <span class="meta__title">MOVIE DASHBOARD</span>
             </div>
             <span class="meta__icon" aria-hidden="true">↗</span>
           </div>
@@ -528,7 +260,7 @@
           <img src="./assets/icons/email.png" alt="Email" />
           nafhan1723@gmail.com
         </a>
-visit proj
+
         <!-- social icons -->
         <ul class="contact__social" aria-label="Social links">
           <li>
