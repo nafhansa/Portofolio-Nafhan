@@ -133,6 +133,14 @@
     reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   }catch(_){}
 
+  // Force start at the top on reload
+  try{
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    window.scrollTo(0,0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }catch(_){}
+
   function runIntro(){
     if(reduceMotion) return;
 
@@ -140,33 +148,58 @@
     var intro = document.createElement('div');
     intro.className = 'intro';
     intro.setAttribute('aria-hidden', 'true');
-    intro.innerHTML = '<div class="intro__brand"><span class="brand__top">NAFHAN</span><span class="brand__sub">PORTFOLIO</span></div>';
+    intro.innerHTML =
+      '<div class="intro__brand">' +
+        '<span class="brand__top">NAFHAN</span>' +
+        '<span class="brand__sub">PORTFOLIO</span>' +
+        '<div class="intro__progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="Loading">' +
+          '<div class="intro__bar"></div>' +
+        '</div>' +
+        '<div class="intro__term"><b>init</b> [##########..........] <span class="term__percent">0%</span> <span class="term__cursor"></span></div>' +
+      '</div>';
 
     document.body.appendChild(intro);
     document.body.classList.add('is-intro');
 
-    // Start: next frame
+    // Start animation next frame
     requestAnimationFrame(function(){
       intro.classList.add('intro--enter');
     });
 
-    // Exit after a short beat
-    var exitDelay = 980; // ms — tweak if you want it shorter/longer
+    // Animate terminal percent to match progress duration
+    var percentEl = intro.querySelector('.term__percent');
+    var start = performance.now();
+    var DURATION = 1200; // ms (match CSS animation)
+    function tick(now){
+      var t = Math.min(1, (now - start) / DURATION);
+      var pct = Math.round(t * 100);
+      if(percentEl) percentEl.textContent = pct + '%';
+      if(t < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+
+    // Exit after progress completes
+    var exitDelay = 1280; // ms
     setTimeout(function(){
       intro.classList.add('intro--exit');
       document.body.classList.remove('is-intro');
 
+      // Restore default scroll behavior
+      try{ if ('scrollRestoration' in history) history.scrollRestoration = 'auto'; }catch(_){}
+
       // Clean up after transition
       setTimeout(function(){
         if(intro && intro.parentNode){ intro.parentNode.removeChild(intro); }
-      }, 520);
+      }, 560);
     }, exitDelay);
   }
 
   if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', runIntro);
+    document.addEventListener('DOMContentLoaded', runIntro, { once: true });
   }else{
     runIntro();
   }
 })();
 // ========================================================================
+
+

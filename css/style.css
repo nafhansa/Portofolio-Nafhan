@@ -551,7 +551,7 @@ section{ scroll-margin-top: 96px; }
   --intro-ease: cubic-bezier(.2,.7,.2,1);
 }
 
-body.is-intro{ overflow: hidden; }
+body.is-intro{ overflow: hidden; height: 100vh; }
 
 .intro{
   position: fixed;
@@ -624,3 +624,87 @@ body.is-intro{ overflow: hidden; }
   }
 }
 /* ========================================================================= */
+
+
+/* === Intro Loading Bar (terminal, black/white) — updated by assistant === */
+.intro__progress{
+  margin-top: 14px;
+  width: clamp(160px, 22vw, 260px);
+  height: 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.28);
+  background: rgba(255,255,255,.08);
+  overflow: hidden;
+}
+.intro__bar{
+  width: 0%;
+  height: 100%;
+  background: #ffffff;
+  box-shadow: 0 0 8px rgba(255,255,255,.35);
+}
+.intro--enter .intro__bar{
+  animation: introProgress 1200ms var(--intro-ease) forwards;
+}
+@keyframes introProgress{
+  0% { width: 0%; }
+  100% { width: 100%; }
+}
+
+/* Terminal line under the bar */
+.intro__term{
+  margin-top: 10px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: clamp(11px, 1.2vw, 13px);
+  color: #e5e7eb;
+  letter-spacing: .02em;
+  opacity: .9;
+  user-select: none;
+}
+.intro__term b{ color: #ffffff; font-weight: 700; }
+.term__cursor{
+  display: inline-block;
+  width: .6ch;
+  height: 1em;
+  background: #ffffff;
+  transform: translateY(.12em);
+  animation: blink 1s steps(1) infinite;
+}
+@keyframes blink{ 50%{ opacity: 0; } }
+.intro__progress{
+  margin-top: 14px;
+  width: clamp(160px, 22vw, 260px);
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.14);
+  overflow: hidden;
+}
+.intro__bar{
+  width: 0%;
+  height: 100%;
+  background: #da0808;
+  border-radius: inherit;
+  box-shadow: 0 0 24px rgba(139,92,246,.35);
+}
+.intro--enter .intro__bar{
+  animation: introProgress 1200ms var(--intro-ease) forwards;
+}
+@keyframes introProgress{
+  0% { width: 0%; }
+  100% { width: 100%; }
+}
+
+/* === Bats canvas overlay (added by assistant) ============================ */
+#batsCanvas{
+  position: fixed;
+  inset: 0;
+  z-index: 9990; /* below .intro (9998) */
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 360ms ease;
+}
+#batsCanvas.is-visible{ opacity: 1; }
+
+@media (prefers-reduced-motion: reduce){
+  #batsCanvas{ display: none !important; }
+}
+/* ======================================================================== */
