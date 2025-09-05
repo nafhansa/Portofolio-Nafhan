@@ -125,7 +125,6 @@
 })();
 // =========================================================================
 
-
 // === Page Intro (first-load entrance) — added by assistant ================
 (function(){
   var reduceMotion = false;
@@ -152,10 +151,10 @@
       '<div class="intro__brand">' +
         '<span class="brand__top">NAFHAN</span>' +
         '<span class="brand__sub">PORTFOLIO</span>' +
-        '<div class="intro__progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="Loading">' +
+        '<div class="intro__progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Loading">' +
           '<div class="intro__bar"></div>' +
         '</div>' +
-        '<div class="intro__term"><b>init</b> [##########..........] <span class="term__percent">0%</span> <span class="term__cursor"></span></div>' +
+        '<div class="intro__term"><b>init</b> [<span class="term__bar" aria-hidden="true"></span>] <span class="term__percent">0%</span> <span class="term__cursor"></span></div>' +
       '</div>';
 
     document.body.appendChild(intro);
@@ -166,14 +165,24 @@
       intro.classList.add('intro--enter');
     });
 
-    // Animate terminal percent to match progress duration
+    // Animate terminal percent + ASCII bar to match progress duration
     var percentEl = intro.querySelector('.term__percent');
+    var asciiBarEl = intro.querySelector('.term__bar');
+    var progressEl = intro.querySelector('.intro__progress');
     var start = performance.now();
     var DURATION = 1200; // ms (match CSS animation)
+    var BAR_LEN = 20;    // characters inside the [..........] brackets
+
     function tick(now){
       var t = Math.min(1, (now - start) / DURATION);
       var pct = Math.round(t * 100);
+      var filled = Math.round(t * BAR_LEN);
+      var bar = '#'.repeat(filled) + '.'.repeat(BAR_LEN - filled);
+
       if(percentEl) percentEl.textContent = pct + '%';
+      if(asciiBarEl) asciiBarEl.textContent = bar;
+      if(progressEl) progressEl.setAttribute('aria-valuenow', String(pct));
+
       if(t < 1) requestAnimationFrame(tick);
     }
     requestAnimationFrame(tick);
@@ -201,5 +210,3 @@
   }
 })();
 // ========================================================================
-
-
