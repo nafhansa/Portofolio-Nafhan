@@ -1,30 +1,34 @@
 import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from dotenv import load_dotenv
 from PyPDF2 import PdfReader
-
-# watsonx optional
-try:
-    from ibm_watsonx_ai.foundation_models import ModelInference
-except Exception:
-    ModelInference = None
-
-load_dotenv()
+from ibm_watsonx_ai.foundation_models import ModelInference
 
 app = Flask(__name__)
 
-# CORS longgar dulu aja biar gampang debug
 CORS(
     app,
-    resources={r"/*": {"origins": "*"}},
+    resources={
+        r"/*": {
+            "origins": [
+                "https://nafhan.space",
+                "https://www.nafhan.space",
+                "http://localhost:5173",
+                "http://localhost:8080",
+                "http://127.0.0.1:8080",
+            ],
+            "allow_headers": ["Content-Type", "Authorization"],
+            "methods": ["GET", "POST", "OPTIONS"],
+        }
+    },
 )
 
-PDF_PATH = "./Nafhan_Profile.pdf"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+PDF_PATH = os.path.join(BASE_DIR, "Nafhan_Profile.pdf")
 
-WATSONX_APIKEY = os.getenv("WATSONX_APIKEY")
-WATSONX_PROJECT_ID = os.getenv("WATSONX_PROJECT_ID")
-WATSONX_URL = os.getenv("WATSONX_URL", "https://jp-tok.ml.cloud.ibm.com")
+WATSONX_APIKEY = os.environ.get("WATSONX_APIKEY")
+WATSONX_PROJECT_ID = os.environ.get("WATSONX_PROJECT_ID")
+WATSONX_URL = os.environ.get("WATSONX_URL", "https://jp-tok.ml.cloud.ibm.com")
 
 PDF_TEXT = ""
 
@@ -33,17 +37,14 @@ def load_pdf_text() -> str:
     if not os.path.exists(PDF_PATH):
         raise FileNotFoundError(f"PDF tidak ditemukan di {PDF_PATH}")
     reader = PdfReader(PDF_PATH)
-    pages = []
+    texts = []
     for page in reader.pages:
-        pages.append(page.extract_text() or "")
-    return "\n".join(pages)
+        texts.append(page.extract_text() or "")
+    return "\n".join(texts)
 
 
 def get_llm():
-    """balikin watsonx kalau env-nya ada, kalau gak ada balikin None"""
     if not (WATSONX_APIKEY and WATSONX_PROJECT_ID):
-        return None
-    if ModelInference is None:
         return None
     return ModelInference(
         model_id="meta-llama/llama-3-3-70b-instruct",
@@ -59,18 +60,20 @@ def get_llm():
     )
 
 
-def simple_answer_from_pdf(question: str, pdf_text: str) -> str:
+def fallback_answer(question: str, pdf_text: str) -> str:
     q = question.lower()
-    if "sekolah" in q or "kuliah" in q:
-        return "Di PDF belum ada info sekolah/kuliah. Tambahkan ke PDF ya 🙂"
+    if "sekolah" in q or "kuliah" in q or "kampus" in q:
+        return "Di PDF belum ada info pendidikan. Tambahin di PDF kalau mau dijawab detail 🙂"
+    first_line = (pdf_text or "").strip().split("\n")[0][:350]
+    if first_line:
+        return (
+            "Ini cuplikan dari PDF kamu:\n\n"
+            + first_line
+            + "\n\n(Aku pakai fallback karena watsonx belum aktif / error.)"
+        )
+    return "Maaf, aku nggak nemu jawabannya di PDF dan watsonx belum bisa dipakai."
 
-    snippet = pdf_text[:400] if pdf_text else ""
-    if snippet:
-        return f"Aku nemu ini di PDF kamu:\n\n{snippet}\n\n(ini fallback lokal karena watsonx nggak jalan)."
-    return "Maaf, aku nggak nemu di PDF dan watsonx nggak aktif."
 
-
-# load pdf pas start container
 try:
     PDF_TEXT = load_pdf_text()
     print("✅ PDF loaded, length:", len(PDF_TEXT))
@@ -79,21 +82,27 @@ except Exception as e:
     PDF_TEXT = ""
 
 
+@app.route("/health", methods=["GET"])
+def health():
+    return jsonify({"status": "ok"}), 200
+
+
 @app.route("/", methods=["GET"])
 def home():
-    return jsonify({"status": "ok", "message": "portfolio chatbot running"})
+    return jsonify({"status": "ok", "message": "portfolio chatbot running"}), 200
 
 
 @app.route("/chat", methods=["POST", "OPTIONS"])
 def chat():
     if request.method == "OPTIONS":
-        return "", 204
+        return ("", 204)
 
     data = request.get_json(silent=True) or {}
     question = (data.get("message") or "").strip()
-
     if not question:
         return jsonify({"reply": "Pertanyaannya kosong."}), 200
+
+    llm = get_llm()
 
     prompt = f"""
 Kamu adalah asisten yang hanya boleh menjawab dari dokumen berikut.
@@ -104,28 +113,22 @@ Kamu adalah asisten yang hanya boleh menjawab dari dokumen berikut.
 
 Pertanyaan pengguna: "{question}"
 
-Jika di dokumen tidak ada jawabannya, jawab:
-"Maaf, di PDF saya tidak menemukan info itu."
+Jika di dokumen tidak ada jawabannya, jawab: "Maaf, di PDF saya tidak menemukan info itu."
 
-Jawab rapi pakai bahasa Indonesia, maksimal 2 paragraf.
+Jawab dalam bahasa Indonesia yang rapi, maksimal 2 paragraf.
 """.strip()
 
-    llm = get_llm()
     if llm is None:
-        # fallback lokal
-        return jsonify({"reply": simple_answer_from_pdf(question, PDF_TEXT)}), 200
+        return jsonify({"reply": fallback_answer(question, PDF_TEXT)}), 200
 
     try:
         answer = llm.generate_text(prompt)
         return jsonify({"reply": answer}), 200
     except Exception as e:
-        fallback = simple_answer_from_pdf(question, PDF_TEXT)
-        return jsonify({"reply": f"{fallback}\n\n(catatan: watsonx error: {e})"}), 200
+        fb = fallback_answer(question, PDF_TEXT)
+        return jsonify({"reply": f"{fb}\n\n(catatan: watsonx error: {e})"}), 200
 
 
 if __name__ == "__main__":
-    # kalau kamu jalanin lokal: python app.py
     port = int(os.environ.get("PORT", 8080))
-    # jalankan pakai waitress di docker (di Dockerfile kita override juga)
-    from waitress import serve
-    serve(app, host="0.0.0.0", port=port)
+    app.run(host="0.0.0.0", port=port)

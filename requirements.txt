@@ -1,6 +1,5 @@
 flask
 flask-cors
 PyPDF2
-waitress
-python-dotenv
 ibm-watsonx-ai
+waitress

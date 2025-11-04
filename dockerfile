@@ -1,22 +1,18 @@
-# pakai python resmi
-FROM python:3.11-slim
+# image kecil aja
+FROM python:3.13-slim
 
-# kerja di /app
+# bikin workdir
 WORKDIR /app
 
-# copy requirements dulu (biar cache-nya kepake)
-COPY requirements.txt /app/requirements.txt
+# copy requirements dulu
+COPY requirements.txt .
 
-# install dependency
-RUN pip install --no-cache-dir -r /app/requirements.txt
+# install dep
+RUN pip install --no-cache-dir -r requirements.txt
 
-# copy source code + PDF
-COPY app.py /app/app.py
-COPY Nafhan_Profile.pdf /app/Nafhan_Profile.pdf
+# copy semua source
+COPY . .
 
-# Railway biasanya kasih PORT env, kita expose 8080 aja defaultnya
-EXPOSE 8080
-
-# jalankan app
-# kalau kamu mau pakai waitress:
-CMD ["python", "app.py"]
+# Railway bakal ngasih env PORT, kita pake itu
+# jalankan pakai waitress (production grade)
+CMD ["sh", "-c", "waitress-serve --listen=0.0.0.0:${PORT:-8080} app:app"]
