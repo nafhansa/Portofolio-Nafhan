@@ -9,10 +9,8 @@ load_dotenv()
 
 app = Flask(__name__)
 
-# =====================================================
-# CORS CONFIG
-# =====================================================
-# origin yang boleh nembak API kamu
+# ===================== CORS =========================
+# list origin yang boleh
 ALLOWED_ORIGINS = [
     "https://nafhan.space",
     "https://www.nafhan.space",
@@ -21,15 +19,15 @@ ALLOWED_ORIGINS = [
     "http://127.0.0.1:8080",
 ]
 
-# aktifin CORS basic dulu
+# aktifkan CORS global dulu
 CORS(app, supports_credentials=True)
 
 
 @app.after_request
 def add_cors_headers(resp):
     """
-    Dipanggil setiap selesai bikin response.
-    Kita paksa tambahin header CORS biar preflight (OPTIONS) nggak ditolak.
+    Ditambahin ke SEMUA response, termasuk OPTIONS.
+    Ini yang bikin browser berhenti komplain.
     """
     origin = request.headers.get("Origin")
     if origin in ALLOWED_ORIGINS:
@@ -41,33 +39,27 @@ def add_cors_headers(resp):
     return resp
 
 
-# =====================================================
-# KONFIG WATSONX + PDF
-# =====================================================
+# ===================== CONFIG =======================
 PDF_PATH = "./Nafhan_Profile.pdf"
 
 WATSONX_APIKEY = os.getenv("WATSONX_APIKEY")
 WATSONX_PROJECT_ID = os.getenv("WATSONX_PROJECT_ID")
 WATSONX_URL = os.getenv("WATSONX_URL", "https://jp-tok.ml.cloud.ibm.com")
 
-# diisi waktu startup
-PDF_TEXT = ""
+PDF_TEXT = ""  # diisi pas startup
 
 
 def load_pdf_text() -> str:
-    """Baca isi PDF jadi satu string panjang."""
+    """Baca isi PDF jadi 1 string panjang."""
     if not os.path.exists(PDF_PATH):
         raise FileNotFoundError(f"PDF tidak ditemukan di {PDF_PATH}")
-
     reader = PdfReader(PDF_PATH)
-    pages = []
-    for p in reader.pages:
-        pages.append(p.extract_text() or "")
+    pages = [(p.extract_text() or "") for p in reader.pages]
     return "\n".join(pages)
 
 
 def get_llm() -> ModelInference | None:
-    """Balikin instance watsonx, atau None kalau env belum diset."""
+    """Balikin watsonx kalau env ada, kalau nggak ya None."""
     if not (WATSONX_APIKEY and WATSONX_PROJECT_ID):
         return None
 
@@ -90,22 +82,20 @@ def simple_answer_from_pdf(question: str, pdf_text: str) -> str:
     q = question.lower()
 
     if "sekolah" in q or "kuliah" in q:
-        return "Di PDF kamu belum ada detail pendidikan. Tambahin ke PDF biar bisa dijawab ya 🙂"
+        return "Di PDF belum ada bagian sekolah/kuliah. Tambahkan di PDF biar AI bisa jawab ya 🙂"
 
     snippet = pdf_text.strip().split("\n")[0][:300] if pdf_text else ""
     if snippet:
         return (
             "Aku baca dari PDF kamu:\n\n"
             f"{snippet}\n\n"
-            "(kalau mau jawaban lebih konteks, isi env watsonx di Railway ya.)"
+            "(kalau mau jawaban lebih detail, aktifkan kredensial watsonx di Railway.)"
         )
 
     return "Maaf, aku nggak nemu jawabannya di PDF dan watsonx belum aktif."
 
 
-# =====================================================
-# STARTUP: LOAD PDF SEKALI
-# =====================================================
+# =============== LOAD PDF DI STARTUP =================
 try:
     PDF_TEXT = load_pdf_text()
     print("✅ PDF loaded, length:", len(PDF_TEXT))
@@ -114,9 +104,7 @@ except Exception as e:
     PDF_TEXT = ""
 
 
-# =====================================================
-# ROUTES
-# =====================================================
+# ====================== ROUTES =======================
 @app.route("/", methods=["GET"])
 def home():
     return jsonify({"status": "ok", "message": "portfolio chatbot running"})
@@ -124,12 +112,11 @@ def home():
 
 @app.route("/chat", methods=["POST", "OPTIONS"])
 def chat():
-    # 1) tangani preflight OPTIONS (browser kirim ini dulu)
+    # browser kirim ini dulu
     if request.method == "OPTIONS":
-        # cukup balikin 204, header CORS sudah ditambahin di @after_request
+        # header CORS sudah ditambahin di after_request
         return ("", 204)
 
-    # 2) request beneran
     data = request.get_json(silent=True) or {}
     question = (data.get("message") or "").strip()
 
@@ -153,17 +140,15 @@ Jika di dokumen tidak ada jawabannya, jawab pakai kalimat ini:
 Jawab dalam bahasa Indonesia yang rapi, maksimal 2 paragraf.
 """.strip()
 
-    # kalau watsonx belum diset → langsung fallback
+    # kalau watsonx belum diset → fallback
     if llm is None:
         reply = simple_answer_from_pdf(question, PDF_TEXT)
         return jsonify({"reply": reply}), 200
 
-    # kalau watsonx ada → coba generate
     try:
         answer = llm.generate_text(prompt)
         return jsonify({"reply": answer}), 200
     except Exception as e:
-        # kalau gagal panggil watsonx, jangan bikin frontend error
         fallback = simple_answer_from_pdf(question, PDF_TEXT)
         return jsonify({
             "reply": f"{fallback}\n\n(catatan server: watsonx error: {e})"
