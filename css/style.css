@@ -134,7 +134,7 @@ section{ scroll-margin-top: 96px; }
 
 /* CTA PNG buttons */
 .hero__cta{
-  margin-top: clamp(40px, 5vw, 64px);
+  margin-top: clamp(30px, 4vw, 64px);
   display:flex; justify-content:center; gap:clamp(16px, 3vw, 28px); flex-wrap:wrap;
 }
 .btn-img{ display:inline-block; cursor:pointer; }
@@ -400,9 +400,8 @@ section{ scroll-margin-top: 96px; }
 .contact__social a:hover img{ transform:translateY(-1px); opacity:.95; }
 
 /* ==== Device Gate (blokir HP/tablet) ==== */
-.device-gate{ display:none; } /* default: sembunyi di desktop */
+.device-gate{ display:none; } 
 
-/* Tampilkan jika perangkat layar kecil / pointer kasar (HP/tablet) */
 @media (max-width: 1024px), (hover: none) and (pointer: coarse) {
   .device-gate{
     position: fixed;
@@ -411,8 +410,8 @@ section{ scroll-margin-top: 96px; }
     align-items: center;
     justify-content: center;
     padding: 24px;
-    background: var(--bg);      
-    z-index: 999999;                 
+    background: var(--bg);       
+    z-index: 999999;         
     text-align: center;
   }
   .device-gate__inner{
@@ -421,430 +420,155 @@ section{ scroll-margin-top: 96px; }
   }
   .device-gate__inner h2{
     font-family: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-    font-weight: 700;               
+    font-weight: 700;      
     font-size: clamp(20px, 5vw, 28px);
     margin: 0 0 12px;
   }
   .device-gate__inner p{
     font-family: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-    font-weight: 300;          
+    font-weight: 300;        
     color: var(--muted);
     line-height: 1.7;
     margin: 0;
   }
 }
 
-/* === Projects: uniform sizing & layout (added by assistant) === */
-.projects__grid{
-  display:grid;
-  grid-template-columns: repeat(2, minmax(280px, 1fr));
-  gap: 24px;
-  align-items: stretch;
+/* ==== Chatbot Fixes ==== */
+.chatbot {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999 !important;
 }
 
-.project-card{
-  position: relative;
-  display: block;
-  border-radius: 16px;
+.chatbot__btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  border-radius: 50%;
+  outline: none;
+  z-index: 9999 !important;
+}
+
+.chatbot__btn img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.chatbot__btn:hover img {
+  transform: translateY(-2px);
+  filter: brightness(1.2);
+}
+
+.chatbot__panel {
+  position: fixed;
+  bottom: 100px;
+  right: 24px;
+  width: 340px;
+  max-height: 480px;
+  background: rgba(30, 30, 30, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
   overflow: hidden;
-  background: #0d0d0d;
-  /* keep all cards the same height/ratio */
-  aspect-ratio: 16 / 9;
+  display: none;
+  flex-direction: column;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.4);
+  z-index: 9998;
 }
 
-.project-card__thumb{
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
+.chatbot--open .chatbot__panel {
+  display: flex;
 }
 
-/* keep meta fixed at bottom with gentle overlay */
-.project-card__meta{
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
+.chatbot__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
-  background: linear-gradient(to top, rgba(0,0,0,.65), rgba(0,0,0,0));
+  background: rgba(255, 255, 255, 0.05);
 }
 
-.meta__label{ font-size: 12px; letter-spacing: .08em; }
-.meta__title{ font-size: 16px; font-weight: 700; }
-.meta__icon{ font-size: 20px; transform: translateY(-1px); }
-
-/* Fallback for very old browsers without aspect-ratio support */
-@supports not (aspect-ratio: 1) {
-  .project-card::before { content: ""; float: left; padding-top: 56.25%; }
-  .project-card::after { content: ""; display: block; clear: both; }
-  .project-card__thumb { position: absolute; inset: 0; }
-  .project-card__meta { position: absolute; left: 0; right: 0; bottom: 0; }
-}
-
-/* Optional: widen on very large screens but keep 2 columns to preserve sizing "like before" */
-@media (min-width: 1440px){
-  .projects__grid{
-    grid-template-columns: repeat(2, minmax(360px, 1fr));
-    gap: 28px;
-  }
-}
-
-
-/* === Entrance & Scroll Reveal (added by assistant) ======================= */
-:root{
-  --reveal-duration: 480ms;
-  --reveal-ease: cubic-bezier(.2,.7,.2,1);
-}
-
-.reveal{
-  opacity: 0;
-  transform: translateY(12px) scale(.98);
-  filter: saturate(.9);
-}
-
-.reveal--visible{
-  opacity: 1;
-  transform: none;
-  filter: none;
-  transition:
-    transform var(--reveal-duration) var(--reveal-ease) var(--stagger, 0ms),
-    opacity  var(--reveal-duration) var(--reveal-ease) var(--stagger, 0ms),
-    filter   var(--reveal-duration) var(--reveal-ease) var(--stagger, 0ms);
-  will-change: transform, opacity;
-}
-
-/* Hero tweaks for a bit more punch */
-.hero .avatar.reveal{ transform: translateY(8px) scale(.92); }
-.hero .title.reveal{ transform: translateY(14px); }
-.hero .hero__desc.reveal{ transform: translateY(18px); }
-.hero .hero__cta .btn-img.reveal{ transform: translateY(12px) scale(.98); }
-.skills__list li.reveal{ transform: translateY(10px) scale(.98); }
-
-/* Project card micro-interaction */
-.project-card{
-  transition: transform 220ms ease, box-shadow 220ms ease;
-}
-.project-card:hover{
-  transform: translateY(-4px);
-  box-shadow: 0 10px 24px rgba(0,0,0,.25);
-}
-
-/* Accessibility: respect reduced-motion preferences */
-@media (prefers-reduced-motion: reduce){
-  .reveal,
-  .reveal--visible{
-    opacity: 1 !important;
-    transform: none !important;
-    filter: none !important;
-    transition: none !important;
-  }
-  .project-card{ transition: none !important; }
-}
-/* ======================================================================= */
-
-
-/* === Page Intro (first-load entrance) — added by assistant ================= */
-:root{
-  --intro-ease: cubic-bezier(.2,.7,.2,1);
-}
-
-body.is-intro{ overflow: hidden; height: 100vh; }
-
-.intro{
-  position: fixed;
-  inset: 0;
-  z-index: 9998;
-  display: grid;
-  place-items: center;
-  background: #0b0b0b;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.intro--enter{
-  opacity: 1;
-  pointer-events: auto;
-  transition: opacity 280ms var(--intro-ease);
-}
-
-.intro--exit{
-  opacity: 0;
-  transition: opacity 460ms var(--intro-ease);
-}
-
-.intro__brand{
-  text-align: center;
-  color: #fff;
-  opacity: 0;
-  transform: translateY(10px) scale(.98);
-}
-
-.intro--enter .intro__brand{
-  opacity: 1;
-  transform: none;
-  transition:
-    opacity 480ms var(--intro-ease) 80ms,
-    transform 480ms var(--intro-ease) 80ms;
-}
-
-.brand__top{
-  display: block;
-  font-family: "Plus Jakarta Sans", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-  font-weight: 800;
-  letter-spacing: .22em;
-  text-transform: uppercase;
-  font-size: clamp(22px, 2.2vw, 32px);
-}
-
-.brand__sub{
-  display: block;
-  margin-top: 8px;
-  font-family: "Poppins", -apple-system, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+.chatbot__title {
+  font-family: "Poppins", sans-serif;
   font-weight: 600;
-  letter-spacing: .28em;
-  text-transform: uppercase;
-  opacity: .8;
-  font-size: clamp(10px, 1.1vw, 14px);
+  font-size: 15px;
 }
 
-/* Respect reduced motion */
-@media (prefers-reduced-motion: reduce){
-  .intro,
-  .intro--enter,
-  .intro--exit{
-    opacity: 0 !important;
-    transition: none !important;
-  }
-  .intro__brand{
-    opacity: 1 !important;
-    transform: none !important;
-  }
-}
-/* ========================================================================= */
-
-
-/* === Intro Loading Bar (terminal, black/white) — updated by assistant === */
-.intro__progress{
-  margin-top: 14px;
-  width: clamp(160px, 22vw, 260px);
-  height: 8px;
-  border-radius: 999px;
-  border: 1px solid rgba(255,255,255,.28);
-  background: rgba(255,255,255,.08);
-  overflow: hidden;
-}
-.intro__bar{
-  width: 0%;
-  height: 100%;
-  background: #ffffff;
-  box-shadow: 0 0 8px rgba(255,255,255,.35);
-}
-.intro--enter .intro__bar{
-  animation: introProgress 1200ms var(--intro-ease) forwards;
-}
-@keyframes introProgress{
-  0% { width: 0%; }
-  100% { width: 100%; }
-}
-
-/* Terminal line under the bar */
-.intro__term{
-  margin-top: 10px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  font-size: clamp(11px, 1.2vw, 13px);
-  color: #e5e7eb;
-  letter-spacing: .02em;
-  opacity: .9;
-  user-select: none;
-}
-.intro__term b{ color: #ffffff; font-weight: 700; }
-.term__cursor{
-  display: inline-block;
-  width: .6ch;
-  height: 1em;
-  background: #ffffff;
-  transform: translateY(.12em);
-  animation: blink 1s steps(1) infinite;
-}
-@keyframes blink{ 50%{ opacity: 0; } }
-.intro__progress{
-  margin-top: 14px;
-  width: clamp(160px, 22vw, 260px);
-  height: 6px;
-  border-radius: 999px;
-  background: rgba(255,255,255,.14);
-  overflow: hidden;
-}
-.intro__bar{
-  width: 0%;
-  height: 100%;
-  background: #da0808;
-  border-radius: inherit;
-  box-shadow: 0 0 24px rgba(139,92,246,.35);
-}
-.intro--enter .intro__bar{
-  animation: introProgress 1200ms var(--intro-ease) forwards;
-}
-@keyframes introProgress{
-  0% { width: 0%; }
-  100% { width: 100%; }
-}
-
-/* === Bats canvas overlay (added by assistant) ============================ */
-#batsCanvas{
-  position: fixed;
-  inset: 0;
-  z-index: 9990; /* below .intro (9998) */
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 360ms ease;
-}
-#batsCanvas.is-visible{ opacity: 1; }
-
-@media (prefers-reduced-motion: reduce){
-  #batsCanvas{ display: none !important; }
-}
-/* ======================================================================== */
-
-
-/* === Floating Chatbot (bottom-right) ===================================== */
-:root{
-  --chat-size: 56px;
-  --chat-z: 9997; /* below .intro (9998), above content */
-  --chat-panel-w: clamp(300px, 28vw, 360px);
-  --chat-bg: #171717;
-  --chat-border: rgba(255,255,255,.08);
-  --chat-muted: #cfcfcf;
-}
-
-.chatbot{
-  position: fixed;
-  right: 22px;
-  bottom: 22px;
-  z-index: var(--chat-z);
-}
-
-.chatbot__btn{
-  width: var(--chat-size);
-  height: var(--chat-size);
-  border-radius: 999px;
-  background: #313131; /* brand red */
-  color: #fff;
-  border: 1px solid rgba(255,255,255,.06);
-  box-shadow: 0 10px 24px rgba(255,255,255,.06);
-  cursor: pointer;
-  font-size: 22px;
-  line-height: 1;
-  display: grid;
-  place-items: center;
-  transition: transform .16s ease, box-shadow .16s ease, opacity .16s ease;
-}
-.chatbot__btn img{ width: 26px; height: 26px; display: block; }
-.chatbot__btn:hover{ transform: translateY(-1px); box-shadow: 0 14px 30px rgba(0,0,0,.45); }
-.chatbot__btn:active{ transform: translateY(0); }
-.chatbot__btn:focus-visible{ outline: 2px solid #fff; outline-offset: 2px; }
-
-.chatbot__panel{
-  position: absolute;
-  right: 0;
-  bottom: calc(var(--chat-size) + 12px);
-  width: var(--chat-panel-w);
-  max-height: min(70vh, 560px);
-  background: var(--chat-bg);
-  border: 1px solid var(--chat-border);
-  border-radius: 16px;
-  box-shadow: 0 16px 40px rgba(0,0,0,.5);
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  overflow: hidden;
-  opacity: 0;
-  transform: translateY(8px) scale(.98);
-  pointer-events: none;
-  transition: opacity .18s ease, transform .18s ease;
-}
-.chatbot--open .chatbot__panel{
-  opacity: 1;
-  transform: none;
-  pointer-events: auto;
-}
-
-.chatbot__header{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--chat-border);
-  background: rgba(255,255,255,.02);
-}
-.chatbot__title{
-  font-family:"Poppins", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-weight: 700;
-  font-size: 14px;
-}
-.chatbot__close{
-  appearance: none;
+.chatbot__close {
+  background: none;
   border: none;
-  background: transparent;
   color: #fff;
-  font-size: 20px;
+  font-size: 18px;
   cursor: pointer;
 }
-.chatbot__messages{
+
+.chatbot__messages {
+  flex: 1;
+  overflow-y: auto;
   padding: 12px;
-  overflow: auto;
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 10px;
 }
-.chat-msg{ display: grid; gap: 6px; }
-.chat-msg__bubble{
-  max-width: 82%;
-  padding: 10px 12px;
-  border-radius: 12px;
-  font-family: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  line-height: 1.5;
-}
-.chat-msg--user .chat-msg__bubble{
-  margin-left: auto;
-  background: #2b2b2b;
-}
-.chat-msg--bot .chat-msg__bubble{
-  margin-right: auto;
-  background: #1f1f1f;
-  border: 1px solid var(--chat-border);
-}
-.chatbot__form{
+
+.chat-msg {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px;
-  border-top: 1px solid var(--chat-border);
-}
-.chatbot__input{
-  flex: 1;
-  background: #222;
-  color: #fff;
-  border: 1px solid var(--chat-border);
-  border-radius: 999px;
-  padding: 10px 12px;
-  font-family: inherit;
-}
-.chatbot__send{
-  appearance: none;
-  border: 1px solid rgba(255,255,255,.18);
-  background: #e21b1b;
-  color: #fff;
-  border-radius: 999px;
-  padding: 8px 14px;
-  font-weight: 700;
-  cursor: pointer;
 }
 
-/* Hide chatbot when device-gate is showing on small screens */
-@media (max-width: 1024px), (hover: none) and (pointer: coarse) {
-  .chatbot{ display: none !important; }
+.chat-msg--user {
+  justify-content: flex-end;
 }
-/* ======================================================================== */
+
+.chat-msg__bubble {
+  max-width: 80%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  line-height: 1.5;
+  font-family: "Poppins", sans-serif;
+  font-size: 14px;
+}
+
+.chat-msg--user .chat-msg__bubble {
+  background: #db1b1f;
+  color: white;
+}
+
+.chat-msg--bot .chat-msg__bubble {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.chatbot__form {
+  display: flex;
+  gap: 8px;
+  padding: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.chatbot__input {
+  flex: 1;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-family: "Poppins", sans-serif;
+}
+
+.chatbot__input::placeholder {
+  color: #aaa;
+}
+
+.chatbot__send {
+  background: #db1b1f;
+  border: none;
+  color: white;
+  padding: 0 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}

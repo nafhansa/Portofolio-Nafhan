@@ -1,80 +1,69 @@
-(function(){
-  var root = document.getElementById('chatbot');
-  if(!root) return;
+document.addEventListener("DOMContentLoaded", () => {
+  const chatbot = document.getElementById("chatbot");
+  const toggleBtn = document.getElementById("chatbotToggle");
+  const panel = document.getElementById("chatbot-panel");
+  const closeBtn = document.querySelector(".chatbot__close");
+  const form = document.querySelector(".chatbot__form");
+  const input = document.querySelector(".chatbot__input");
+  const messages = document.getElementById("chatbot-messages");
 
-  var toggleBtn = document.getElementById('chatbotToggle');
-  var panel = document.getElementById('chatbot-panel');
-  var closeBtn = panel && panel.querySelector('.chatbot__close');
-  var list = document.getElementById('chatbot-messages');
-  var form = panel && panel.querySelector('.chatbot__form');
-  var input = panel && panel.querySelector('.chatbot__input');
+  if (!chatbot || !toggleBtn || !panel) return;
 
-  var STORAGE_KEY = 'chatbot_history_v1';
-
-  // otomatis pilih API sesuai environment
-  var API_BASE = window.location.hostname.includes("localhost")
+  const API_BASE = window.location.hostname.includes("localhost")
     ? "http://localhost:8080"
     : "https://portofolio-nafhan-production.up.railway.app";
 
-  function render(role, text){
-    var item = document.createElement('div');
-    item.className = 'chat-msg chat-msg--' + (role === 'user' ? 'user' : 'bot');
-    var bubble = document.createElement('div');
-    bubble.className = 'chat-msg__bubble';
+  function render(role, text) {
+    const msg = document.createElement("div");
+    msg.className = `chat-msg chat-msg--${role}`;
+    const bubble = document.createElement("div");
+    bubble.className = "chat-msg__bubble";
     bubble.textContent = text;
-    item.appendChild(bubble);
-    list.appendChild(item);
-    list.scrollTop = list.scrollHeight;
+    msg.appendChild(bubble);
+    messages.appendChild(msg);
+    messages.scrollTop = messages.scrollHeight;
   }
 
-  function saveHistory(arr){
-    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(arr.slice(-10))); }catch(_){}
-  }
-  function loadHistory(){
-    try{ return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }catch(_){ return []; }
-  }
+  toggleBtn.addEventListener("click", () => {
+    chatbot.classList.toggle("chatbot--open");
+    const expanded = chatbot.classList.contains("chatbot--open");
+    toggleBtn.setAttribute("aria-expanded", expanded);
+    if (expanded) input?.focus();
+  });
 
-  var history = loadHistory();
-  if(history.length === 0){
-    history = [{ role:'bot', text:'Halo! Saya asisten AI Nafhan 🤖. Mau tahu tentang project, skill, atau pengalaman saya?' }];
-  }
-  history.forEach(m => render(m.role, m.text));
+  closeBtn?.addEventListener("click", () => {
+    chatbot.classList.remove("chatbot--open");
+    toggleBtn.setAttribute("aria-expanded", "false");
+  });
 
-  form && form.addEventListener('submit', async function(e){
+  form?.addEventListener("submit", async (e) => {
     e.preventDefault();
-    var msg = (input.value || '').trim();
-    if(!msg) return;
+    const msg = input.value.trim();
+    if (!msg) return;
 
-    render('user', msg);
-    history.push({ role:'user', text: msg });
-    saveHistory(history);
-    input.value = '';
-    input.focus();
+    render("user", msg);
+    input.value = "";
 
-    var typing = document.createElement('div');
-    typing.className = 'chat-msg chat-msg--bot typing';
+    const typing = document.createElement("div");
+    typing.className = "chat-msg chat-msg--bot";
     typing.innerHTML = '<div class="chat-msg__bubble">...</div>';
-    list.appendChild(typing);
-    list.scrollTop = list.scrollHeight;
+    messages.appendChild(typing);
 
     try {
       const res = await fetch(`${API_BASE}/chat`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: msg }),
       });
-
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       typing.remove();
-      render('bot', data.reply);
-      history.push({ role:'bot', text: data.reply });
-      saveHistory(history);
-
+      render("bot", data.reply);
     } catch (err) {
       typing.remove();
-      render('bot', '⚠️ Gagal terhubung ke server. Cek URL API atau redeploy Railway.');
-      console.error("Chatbot error:", err);
+      render("bot", "⚠️ Gagal terhubung ke server.");
     }
   });
-})();
+
+  // Pesan pembuka
+  render("bot", "Halo! Saya asisten AI Nafhan 🤖. Mau tahu tentang project, skill, atau pengalaman saya?");
+});
