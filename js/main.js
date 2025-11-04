@@ -14,7 +14,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const messages = document.getElementById("chatbot-messages");
 
   // ganti ke domain Railway kamu
-  const API_BASE = "https://portofolio-nafhan-production.up.railway.app";
+  const API_BASE = window.location.hostname.includes("localhost")
+    ? "http://localhost:8080"
+    : "https://portofolio-nafhan-production.up.railway.app";
 
   function render(role, text) {
     const msg = document.createElement("div");
