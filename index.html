@@ -9,12 +9,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
-  <!-- Styles -->
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 
-  <!-- Header (sticky) -->
+  <!-- HEADER -->
   <header class="header">
     <div class="overlap-group">
       <nav class="navbar" aria-label="Primary">
@@ -29,7 +28,7 @@
   </header>
 
   <main>
-    <!-- Hero -->
+    <!-- HERO -->
     <section id="home" class="hero">
       <div class="hero__inner">
         <img src="./assets/images/pp.jpg" alt="Foto Nafhan Shafy" class="avatar" />
@@ -46,263 +45,130 @@
         </p>
 
         <div class="hero__cta">
-          <a
-          href="https://wa.me/6281234567890?text=Halo%20Nafhan%2C%20saya%20lihat%20portfolio%20kamu%20dan%20ingin%20ngobrol%20lebih%20lanjut."
-          class="btn-img"
-          target="_blank"
-          rel="noopener"
-          aria-label="WhatsApp: Get In Touch"
-          >
-          <img src="./assets/icons/get.png" alt="Get In Touch (WhatsApp)">
+          <a href="https://wa.me/6281234567890?text=Halo%20Nafhan%2C%20saya%20lihat%20portfolio%20kamu%20dan%20ingin%20ngobrol%20lebih%20lanjut."
+            class="btn-img" target="_blank" rel="noopener" aria-label="WhatsApp: Get In Touch">
+            <img src="./assets/icons/get.png" alt="Get In Touch (WhatsApp)">
           </a>
 
-          <a
-            href="https://drive.google.com/drive/folders/1BE30gbFIvpQlzwO7os0LpLJhQfBaQglZ?usp=sharing"
-            class="btn-img"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Download CV (Google Drive, buka tab baru)"
-          >
+          <a href="https://drive.google.com/drive/folders/1BE30gbFIvpQlzwO7os0LpLJhQfBaQglZ?usp=sharing"
+            class="btn-img" target="_blank" rel="noopener noreferrer"
+            aria-label="Download CV (Google Drive, buka tab baru)">
             <img src="./assets/icons/download.png" alt="Download CV">
           </a>
         </div>
 
-        <!-- Experience With -->
         <div class="skills">
           <p class="skills__title">EXPERIENCE WITH</p>
-
-          <ul class="skills__list" aria-label="Tech stack I have experience with">
-            <li class="skills__item">
-              <img src="./assets/icons/javascript.png" alt="JavaScript">
-            </li>
-            <li class="skills__item">
-              <img src="./assets/icons/nodejs.png" alt="Node.js / Next.js">
-            </li>
-            <li class="skills__item">
-              <img src="./assets/icons/html.png" alt="HTML5">
-            </li>
-            <li class="skills__item">
-              <img src="./assets/icons/css.png" alt="CSS3">
-            </li>
-            <li class="skills__item">
-              <img src="./assets/icons/reactjs.png" alt="React">
-            </li>
+          <ul class="skills__list" aria-label="Tech stack">
+            <li><img src="./assets/icons/javascript.png" alt="JavaScript"></li>
+            <li><img src="./assets/icons/nodejs.png" alt="Node.js"></li>
+            <li><img src="./assets/icons/html.png" alt="HTML5"></li>
+            <li><img src="./assets/icons/css.png" alt="CSS3"></li>
+            <li><img src="./assets/icons/reactjs.png" alt="React"></li>
           </ul>
         </div>
       </div>
     </section>
 
-    <!-- ===== Projects ===== -->
+    <!-- PROJECTS -->
     <section id="projects" class="projects">
       <h2 class="projects__title">PROJECTS</h2>
-
       <div class="projects__grid">
-        <!-- Card 1: GitHub -->
         <a class="project-card" href="https://github.com/nafhansa" target="_blank" rel="noopener">
-          <img class="project-card__thumb" src="./assets/images/pro1.png" alt="GitHub profile thumbnail">
+          <img class="project-card__thumb" src="./assets/images/pro1.png" alt="GitHub profile">
           <div class="project-card__meta">
             <div class="meta__text">
               <span class="meta__label">CLICK HERE TO VISIT</span>
               <span class="meta__title">GITHUB REPO</span>
             </div>
-            <span class="meta__icon" aria-hidden="true">↗</span>
+            <span class="meta__icon">↗</span>
           </div>
         </a>
 
-        <!-- Card 2: CTF writeups -->
         <a class="project-card" href="https://renjana.gitbook.io/capturetheflag-pawned/" target="_blank" rel="noopener">
-          <img class="project-card__thumb" src="./assets/images/pro2.png" alt="CTF writeups thumbnail">
+          <img class="project-card__thumb" src="./assets/images/pro2.png" alt="CTF writeups">
           <div class="project-card__meta">
             <div class="meta__text">
               <span class="meta__label">CLICK HERE TO READ</span>
               <span class="meta__title">CTF WRITEUPS</span>
             </div>
-            <span class="meta__icon" aria-hidden="true">↗</span>
+            <span class="meta__icon">↗</span>
           </div>
         </a>
-      
-        <!-- Card 3: Trufman -->
+
         <a class="project-card" href="https://trufman.nafhan.space" target="_blank" rel="noopener">
-          <img class="project-card__thumb" src="./assets/images/trufman.png" alt="Trufman project thumbnail" loading="lazy">
+          <img class="project-card__thumb" src="./assets/images/trufman.png" alt="Trufman">
           <div class="project-card__meta">
             <div class="meta__text">
               <span class="meta__label">CLICK HERE TO PLAY</span>
-              <span class="meta__title">TRUFMAN - ONLINE CARD GAME</span>
+              <span class="meta__title">TRUFMAN - CARD GAME</span>
             </div>
-            <span class="meta__icon" aria-hidden="true">↗</span>
+            <span class="meta__icon">↗</span>
           </div>
         </a>
-
-        <!-- Card 4: Movie Dashboard -->
-        <a class="project-card" href="https://nafhansa.github.io/Movie-Dashboard-Project/" target="_blank" rel="noopener">
-          <img class="project-card__thumb" src="./assets/images/movie-dashboard.png" alt="Movie Dashboard project thumbnail" loading="lazy">
-          <div class="project-card__meta">
-            <div class="meta__text">
-              <span class="meta__label">CLICK HERE TO VISIT</span>
-              <span class="meta__title">MOVIE DASHBOARD (DEMO)</span>
-            </div>
-            <span class="meta__icon" aria-hidden="true">↗</span>
-          </div>
-        </a>
-</div>
-    </section>
-
-    <!-- ===== Certification ===== -->
-    <section id="certification" class="cert">
-      <h2 class="cert__title">CERTIFICATION</h2>
-
-      <div class="cert__list">
-        <article class="cert__item">
-          <header class="cert__head">
-            <h3 class="cert__name">Junior Penetration Tester Path</h3>
-            <span class="cert__date">June – July 2024</span>
-          </header>
-          <p class="cert__desc">
-            I demonstrated foundational skills in ethical hacking, vulnerability assessment, and penetration testing
-            through labs and challenges. Using tools like Nmap, Metasploit, and Burp Suite, I applied reconnaissance
-            techniques and a systematic approach to uncover and exploit common web and network vulnerabilities.
-          </p>
-        </article>
-
-        <article class="cert__item">
-          <header class="cert__head">
-            <h3 class="cert__name">CS50’s Introduction to Cybersec</h3>
-            <span class="cert__date">May 2024 – Present</span>
-          </header>
-          <p class="cert__desc">
-            Since May 2024, I have been pursuing CS50's Introduction to Cybersecurity from Harvard University via edX,
-            actively engaging in modules like “Securing Systems.” This program has strengthened my understanding of
-            cybersecurity fundamentals and strategies to mitigate cyber threats.
-          </p>
-        </article>
       </div>
     </section>
 
-    <!-- ===== Experience ===== -->
-    <section id="experience" class="exp">
-      <h2 class="exp__title">EXPERIENCE</h2>
-
-      <div class="exp__list">
-        <article class="exp__item">
-          <header class="exp__head">
-            <h3 class="exp__role">SEA–Catering WebApp | Academy COMPFEST UI</h3>
-            <span class="exp__date">June 2025</span>
-          </header>
-          <p class="exp__desc">
-        I built responsive UI components using React.js with a focus on modularity and reusability, integrated API
-        endpoints for menu, authentication, and order management, and applied React Hooks for state management and
-        side effects. I styled components with CSS to align with branding, ensuring cross-device compatibility and
-        a seamless user flow for the ordering process.
-          </p>
-        </article>
-
-        <article class="exp__item">
-          <header class="exp__head">
-            <h3 class="exp__role">IoT System Development</h3>
-            <span class="exp__date">May – June 2025</span>
-          </header>
-          <p class="exp__desc">
-            I've developed automation logic for light detection, showcasing proficiency in hardware-software integration
-            and sensor data processing. This project provided practical experience in embedded system design, power
-            management, and a deeper understanding of system architecture.
-          </p>
-        </article>
-      </div>
-    </section>
-
-    <!-- ===== Feedback ===== -->
+    <!-- FEEDBACK -->
     <section id="feedback" class="feedback">
       <h2 class="feedback__title">FEEDBACK</h2>
-
-      <form class="feedback__form" action="#" method="post">
+      <form class="feedback__form">
         <textarea id="fb-message" name="message" placeholder="TYPE HERE"></textarea>
-
         <div class="feedback__actions">
           <button type="submit" class="feedback__submit">SUBMIT</button>
         </div>
       </form>
-
-      <div class="feedback__list" id="feedbackList" aria-live="polite"></div>
-      </section>
-
-      <script src="js/main.js"></script>
-
-
-        <section id="experience" class="stub"></section>  
-  </main>
-    
-  <!-- ===== Contact / Footer ===== -->
-    <section id="contact" class="contact">
-      <div class="contact__inner">
-        <h2 class="contact__title">Contact</h2>
-
-        <p class="contact__desc">
-          In parallel, I have also developed strong skills in frontend development and UI/UX design,
-          building responsive, user-centric web interfaces using HTML, CSS, JavaScript, and React.
-          I am seeking a challenging opportunity, either in cybersecurity or frontend development,
-          where I can continue to grow and make a tangible impact through both secure and intuitive
-          digital solutions.
-        </p>
-
-        <!-- email -->
-        <a class="contact__email" href="mailto:nafhan1723@gmail.com">
-          <img src="./assets/icons/email.png" alt="Email" />
-          nafhan.sh@gmail.com
-        </a>
-
-        <!-- social icons -->
-        <ul class="contact__social" aria-label="Social links">
-          <li>
-            <a href="https://www.instagram.com/nafhanshafy/" target="_blank" rel="noopener">
-              <img src="./assets/icons/instagram.png" alt="Instagram" />
-            </a>
-          </li>
-          <li>
-            <a href="https://x.com/basketbertangan" target="_blank" rel="noopener">
-              <img src="./assets/icons/x.png" alt="X (Twitter)" />
-            </a>
-          </li>
-          <li>
-            <a href="https://www.linkedin.com/in/nafhan-shafy-aulia-a95275307?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank" rel="noopener">
-              <img src="./assets/icons/linked.png" alt="YouTube" />
-            </a>
-          </li>
-        </ul>
-      </div>
+      <div id="feedbackList" class="feedback__list"></div>
     </section>
+  </main>
 
-    <!-- Device gate-->
-    <div class="device-gate" role="dialog" aria-modal="true" aria-labelledby="dg-title">
-      <div class="device-gate__inner">
-        <h2 id="dg-title">I'm Sorry! Display isn’t available on tablet or mobile.</h2>
-        <p>Please switch to a PC or desktop to continue.</p>
-      </div>
+  <!-- CONTACT -->
+  <section id="contact" class="contact">
+    <div class="contact__inner">
+      <h2 class="contact__title">Contact</h2>
+      <p class="contact__desc">
+        I am seeking a challenging opportunity in cybersecurity or frontend development
+        where I can continue to grow and make a tangible impact through secure and
+        intuitive digital solutions.
+      </p>
+      <a class="contact__email" href="mailto:nafhan1723@gmail.com">
+        <img src="./assets/icons/email.png" alt="Email" /> nafhan.sh@gmail.com
+      </a>
+      <ul class="contact__social">
+        <li><a href="https://www.instagram.com/nafhanshafy/" target="_blank"><img src="./assets/icons/instagram.png"></a></li>
+        <li><a href="https://x.com/basketbertangan" target="_blank"><img src="./assets/icons/x.png"></a></li>
+        <li><a href="https://www.linkedin.com/in/nafhan-shafy-aulia-a95275307" target="_blank"><img src="./assets/icons/linked.png"></a></li>
+      </ul>
     </div>
+  </section>
 
-        <!-- Floating Chatbot (bottom-right) -->
-        <div class="chatbot" id="chatbot" aria-live="polite">
-          <button
-            class="chatbot__btn"
-            id="chatbotToggle"
-            aria-haspopup="dialog"
-            aria-controls="chatbot-panel"
-            aria-expanded="false"
-            aria-label="Open chat"
-            title="Open chat"
-          ><img src="./assets/icons/chatbot.png" alt="" aria-hidden="true"></button>
+  <!-- DEVICE GATE -->
+  <div class="device-gate">
+    <div class="device-gate__inner">
+      <h2>I'm Sorry! Display isn’t available on tablet or mobile.</h2>
+      <p>Please switch to a PC or desktop to continue.</p>
+    </div>
+  </div>
 
-          <div class="chatbot__panel" id="chatbot-panel" role="dialog" aria-modal="false" aria-label="Chatbot">
-            <div class="chatbot__header">
-              <div class="chatbot__title">Chat with Nafhan</div>
-              <button class="chatbot__close" aria-label="Close chat">×</button>
-            </div>
-            <div class="chatbot__messages" id="chatbot-messages" aria-live="polite"></div>
-            <form class="chatbot__form" autocomplete="off">
-              <input class="chatbot__input" type="text" name="message" placeholder="Tulis pesan…" aria-label="Message" required />
-              <button class="chatbot__send" type="submit" aria-label="Send">Send</button>
-            </form>
-          </div>
-        </div>
-    <script src="./main.js" defer></script>
+  <!-- CHATBOT -->
+  <div id="chatbot" class="chatbot">
+    <button id="chatbotToggle" class="chatbot__btn" aria-expanded="false">
+      <img src="./assets/icons/chatbot.png" alt="Chatbot" />
+    </button>
+
+    <div id="chatbot-panel" class="chatbot__panel">
+      <div class="chatbot__header">
+        <span class="chatbot__title">Asisten AI Nafhan 🤖</span>
+        <button class="chatbot__close">&times;</button>
+      </div>
+      <div id="chatbot-messages" class="chatbot__messages"></div>
+      <form class="chatbot__form">
+        <input class="chatbot__input" type="text" placeholder="Tulis pesan di sini..." />
+        <button type="submit" class="chatbot__send">Kirim</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/main.js" defer></script>
 </body>
 </html>

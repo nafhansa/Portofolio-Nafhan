@@ -1,3 +1,9 @@
+// === FIX: Matikan overlay di desktop ===
+document.addEventListener("DOMContentLoaded", () => {
+  const dg = document.querySelector(".device-gate");
+  if (dg && window.innerWidth > 1024) dg.style.display = "none";
+});
+
 document.addEventListener("DOMContentLoaded", () => {
   const chatbot = document.getElementById("chatbot");
   const toggleBtn = document.getElementById("chatbotToggle");
@@ -64,6 +70,5 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Pesan pembuka
   render("bot", "Halo! Saya asisten AI Nafhan 🤖. Mau tahu tentang project, skill, atau pengalaman saya?");
 });
