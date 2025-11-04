@@ -8,11 +8,19 @@ from ibm_watsonx_ai.foundation_models import ModelInference
 load_dotenv()
 
 app = Flask(__name__)
-# kalau mau spesifik:
-CORS(app, resources={r"/*": {"origins": ["https://nafhan.space", "https://www.nafhan.space", "*"]}})
+
+# CORS hanya untuk domain kamu
+CORS(app, resources={
+    r"/*": {
+        "origins": [
+            "https://nafhan.space",
+            "https://www.nafhan.space",
+            "http://localhost:5173",  # buat testing lokal
+        ]
+    }
+})
 
 PDF_PATH = "./Nafhan_Profile.pdf"
-
 WATSONX_APIKEY = os.getenv("WATSONX_APIKEY")
 WATSONX_PROJECT_ID = os.getenv("WATSONX_PROJECT_ID")
 WATSONX_URL = os.getenv("WATSONX_URL", "https://jp-tok.ml.cloud.ibm.com")
@@ -22,27 +30,17 @@ PDF_TEXT = ""
 
 def load_pdf_text():
     if not os.path.exists(PDF_PATH):
-      raise FileNotFoundError(f"PDF tidak ditemukan di {PDF_PATH}")
+        raise FileNotFoundError(f"PDF tidak ditemukan di {PDF_PATH}")
     reader = PdfReader(PDF_PATH)
-    pages = []
-    for page in reader.pages:
-        pages.append(page.extract_text() or "")
+    pages = [page.extract_text() or "" for page in reader.pages]
     return "\n".join(pages)
 
 
 def get_llm():
-    if not WATSONX_APIKEY or not WATSONX_PROJECT_ID:
-        raise RuntimeError("WATSONX_APIKEY / WATSONX_PROJECT_ID belum diset di Railway")
     return ModelInference(
         model_id="meta-llama/llama-3-3-70b-instruct",
-        params={
-            "decoding_method": "greedy",
-            "max_new_tokens": 400,
-        },
-        credentials={
-            "apikey": WATSONX_APIKEY,
-            "url": WATSONX_URL,
-        },
+        params={"decoding_method": "greedy", "max_new_tokens": 400},
+        credentials={"apikey": WATSONX_APIKEY, "url": WATSONX_URL},
         project_id=WATSONX_PROJECT_ID,
     )
 
@@ -57,14 +55,13 @@ except Exception as e:
 
 @app.route("/", methods=["GET"])
 def home():
-    return jsonify({"status": "ok", "message": "portfolio chatbot (simple) running"})
+    return jsonify({"status": "ok", "message": "portfolio chatbot running"})
 
 
 @app.route("/chat", methods=["POST"])
 def chat():
     data = request.get_json(silent=True) or {}
     question = (data.get("message") or "").strip()
-
     if not question:
         return jsonify({"reply": "Pertanyaannya kosong."})
 
