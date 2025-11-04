@@ -13,6 +13,7 @@ CORS(
             "origins": [
                 "https://nafhan.space",
                 "https://www.nafhan.space",
+                "https://portofolio-nafhan-production.up.railway.app",
                 "http://localhost:5173",
                 "http://localhost:8080",
                 "http://127.0.0.1:8080",
@@ -127,8 +128,3 @@ Jawab dalam bahasa Indonesia yang rapi, maksimal 2 paragraf.
     except Exception as e:
         fb = fallback_answer(question, PDF_TEXT)
         return jsonify({"reply": f"{fb}\n\n(catatan: watsonx error: {e})"}), 200
-
-
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8080))
-    app.run(host="0.0.0.0", port=port)
