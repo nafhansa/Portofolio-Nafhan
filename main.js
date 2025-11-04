@@ -24,18 +24,15 @@
     card.appendChild(p);
     card.appendChild(time);
 
-    if (prepend) {
-      list.prepend(card);
-    } else {
-      list.append(card);
-    }
+    if (prepend) list.prepend(card);
+    else list.append(card);
   }
 
   function loadAll() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       const arr = raw ? JSON.parse(raw) : [];
-      arr.forEach(item => renderItem(item)); 
+      arr.forEach(item => renderItem(item));
     } catch (e) {
       console.warn('Failed load feedbacks:', e);
     }
@@ -55,7 +52,7 @@
 
     const item = { message: msg, ts: Date.now() };
     save(item);
-    renderItem(item, { prepend: true }); 
+    renderItem(item, { prepend: true });
     form.reset();
     textarea.focus();
   });
@@ -64,14 +61,13 @@
 })();
 
 
-// === Entrance & Scroll Reveal (added by assistant) =======================
+// === Entrance & Scroll Reveal =======================
 (function(){
   function setupReveal(){
     try{
       var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if(reduceMotion) return; // users asked to reduce motion
+      if(reduceMotion) return;
 
-      // Groups of selectors to reveal with stagger
       var groups = [
         '.header .navbar a, .header .logo',
         '.hero .avatar, .hero .title, .hero .hero__desc, .hero .hero__cta a',
@@ -83,7 +79,6 @@
         '.contact__title, .contact__desc, .contact__email, .contact__social li'
       ];
 
-      // Tag targets with .reveal and set a CSS var for stagger delay
       groups.forEach(function(sel, gi){
         document.querySelectorAll(sel).forEach(function(el, i){
           el.classList.add('reveal');
@@ -92,12 +87,10 @@
       });
 
       if(!('IntersectionObserver' in window)){
-        // Fallback: just show everything
         document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('reveal--visible'); });
         return;
       }
 
-      // IntersectionObserver to toggle visibility once
       var io = new IntersectionObserver(function(entries, obs){
         entries.forEach(function(entry){
           if(entry.isIntersecting){
@@ -109,41 +102,27 @@
 
       document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
     }catch(err){
-      // Fail-safe: if anything goes wrong, just show everything
-      document.querySelectorAll('.reveal').forEach(function(el){
-        el.classList.add('reveal--visible');
-      });
+      document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('reveal--visible'); });
     }
   }
 
   if (document.readyState === 'loading'){
     document.addEventListener('DOMContentLoaded', setupReveal, { once: true });
     window.addEventListener('load', setupReveal, { once: true });
-  } else {
-    setupReveal();
-  }
+  } else setupReveal();
 })();
-// =========================================================================
 
-// === Page Intro (first-load entrance) — added by assistant ================
+// === Page Intro =====================================
 (function(){
   var reduceMotion = false;
-  try{
-    reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  }catch(_){}
-
-  // Force start at the top on reload
+  try{ reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(_){}
   try{
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     window.scrollTo(0,0);
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
   }catch(_){}
 
   function runIntro(){
     if(reduceMotion) return;
-
-    // Build overlay
     var intro = document.createElement('div');
     intro.className = 'intro';
     intro.setAttribute('aria-hidden', 'true');
@@ -151,62 +130,138 @@
       '<div class="intro__brand">' +
         '<span class="brand__top">NAFHAN</span>' +
         '<span class="brand__sub">PORTFOLIO</span>' +
-        '<div class="intro__progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Loading">' +
+        '<div class="intro__progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">' +
           '<div class="intro__bar"></div>' +
         '</div>' +
-        '<div class="intro__term"><b>init</b> [<span class="term__bar" aria-hidden="true"></span>] <span class="term__percent">0%</span> <span class="term__cursor"></span></div>' +
+        '<div class="intro__term"><b>init</b> [<span class="term__bar"></span>] <span class="term__percent">0%</span> <span class="term__cursor"></span></div>' +
       '</div>';
-
     document.body.appendChild(intro);
     document.body.classList.add('is-intro');
 
-    // Start animation next frame
-    requestAnimationFrame(function(){
-      intro.classList.add('intro--enter');
-    });
-
-    // Animate terminal percent + ASCII bar to match progress duration
+    requestAnimationFrame(()=> intro.classList.add('intro--enter'));
     var percentEl = intro.querySelector('.term__percent');
     var asciiBarEl = intro.querySelector('.term__bar');
     var progressEl = intro.querySelector('.intro__progress');
     var start = performance.now();
-    var DURATION = 1200; // ms (match CSS animation)
-    var BAR_LEN = 20;    // characters inside the [..........] brackets
+    var DURATION = 1200;
+    var BAR_LEN = 20;
 
     function tick(now){
       var t = Math.min(1, (now - start) / DURATION);
       var pct = Math.round(t * 100);
       var filled = Math.round(t * BAR_LEN);
       var bar = '#'.repeat(filled) + '.'.repeat(BAR_LEN - filled);
-
-      if(percentEl) percentEl.textContent = pct + '%';
-      if(asciiBarEl) asciiBarEl.textContent = bar;
-      if(progressEl) progressEl.setAttribute('aria-valuenow', String(pct));
-
+      percentEl.textContent = pct + '%';
+      asciiBarEl.textContent = bar;
+      progressEl.setAttribute('aria-valuenow', String(pct));
       if(t < 1) requestAnimationFrame(tick);
     }
     requestAnimationFrame(tick);
 
-    // Exit after progress completes
-    var exitDelay = 1280; // ms
-    setTimeout(function(){
+    setTimeout(()=>{
       intro.classList.add('intro--exit');
       document.body.classList.remove('is-intro');
-
-      // Restore default scroll behavior
       try{ if ('scrollRestoration' in history) history.scrollRestoration = 'auto'; }catch(_){}
-
-      // Clean up after transition
-      setTimeout(function(){
-        if(intro && intro.parentNode){ intro.parentNode.removeChild(intro); }
-      }, 560);
-    }, exitDelay);
+      setTimeout(()=> intro.remove(), 560);
+    }, 1280);
   }
 
   if(document.readyState === 'loading'){
     document.addEventListener('DOMContentLoaded', runIntro, { once: true });
-  }else{
-    runIntro();
-  }
+  }else runIntro();
 })();
-// ========================================================================
+
+// === Floating Chatbot (AI-integrated) ================
+(function(){
+  var root = document.getElementById('chatbot');
+  if(!root) return;
+
+  var toggleBtn = document.getElementById('chatbotToggle');
+  var panel = document.getElementById('chatbot-panel');
+  var closeBtn = panel && panel.querySelector('.chatbot__close');
+  var list = document.getElementById('chatbot-messages');
+  var form = panel && panel.querySelector('.chatbot__form');
+  var input = panel && panel.querySelector('.chatbot__input');
+
+  var STORAGE_KEY = 'chatbot_history_v1';
+
+  function render(role, text){
+    var item = document.createElement('div');
+    item.className = 'chat-msg chat-msg--' + (role === 'user' ? 'user' : 'bot');
+    var bubble = document.createElement('div');
+    bubble.className = 'chat-msg__bubble';
+    bubble.textContent = text;
+    item.appendChild(bubble);
+    list.appendChild(item);
+    list.scrollTop = list.scrollHeight;
+  }
+
+  function saveHistory(arr){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(arr.slice(-10))); }catch(_){}
+  }
+  function loadHistory(){
+    try{ return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }catch(_){ return []; }
+  }
+
+  var history = loadHistory();
+  if(history.length === 0){
+    history = [{ role:'bot', text:'Halo! Saya asisten AI Nafhan 🤖. Mau tahu tentang project, skill, atau pengalaman saya?' }];
+  }
+  history.forEach(m => render(m.role, m.text));
+
+  function openPanel(){
+    root.classList.add('chatbot--open');
+    toggleBtn.setAttribute('aria-expanded', 'true');
+    setTimeout(()=> input && input.focus(), 50);
+  }
+  function closePanel(){
+    root.classList.remove('chatbot--open');
+    toggleBtn.setAttribute('aria-expanded', 'false');
+    toggleBtn.focus();
+  }
+
+  toggleBtn && toggleBtn.addEventListener('click', ()=> {
+    if(root.classList.contains('chatbot--open')) closePanel(); else openPanel();
+  });
+  closeBtn && closeBtn.addEventListener('click', closePanel);
+  document.addEventListener('keydown', e=>{
+    if(e.key === 'Escape' && root.classList.contains('chatbot--open')) closePanel();
+  });
+
+  // ==== Integrasi AI Chatbot dengan Backend Flask ====
+  form && form.addEventListener('submit', async function(e){
+    e.preventDefault();
+    var msg = (input.value || '').trim();
+    if(!msg) return;
+
+    render('user', msg);
+    history.push({ role:'user', text: msg });
+    saveHistory(history);
+    input.value = '';
+    input.focus();
+
+    // tampilkan "mengetik..." bubble
+    var typing = document.createElement('div');
+    typing.className = 'chat-msg chat-msg--bot typing';
+    typing.innerHTML = '<div class="chat-msg__bubble">...</div>';
+    list.appendChild(typing);
+    list.scrollTop = list.scrollHeight;
+
+    try {
+        const res = await fetch('https://portofolio-nafhan-production.up.railway.app/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: msg })
+        });
+
+      const data = await res.json();
+      typing.remove();
+      render('bot', data.reply);
+      history.push({ role:'bot', text: data.reply });
+      saveHistory(history);
+    } catch (err) {
+      typing.remove();
+      render('bot', '⚠️ Gagal terhubung ke server. Pastikan app.py sedang berjalan.');
+    }
+  });
+})();

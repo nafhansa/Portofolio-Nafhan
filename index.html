@@ -278,6 +278,31 @@
         <p>Please switch to a PC or desktop to continue.</p>
       </div>
     </div>
+
+        <!-- Floating Chatbot (bottom-right) -->
+        <div class="chatbot" id="chatbot" aria-live="polite">
+          <button
+            class="chatbot__btn"
+            id="chatbotToggle"
+            aria-haspopup="dialog"
+            aria-controls="chatbot-panel"
+            aria-expanded="false"
+            aria-label="Open chat"
+            title="Open chat"
+          ><img src="./assets/icons/chatbot.png" alt="" aria-hidden="true"></button>
+
+          <div class="chatbot__panel" id="chatbot-panel" role="dialog" aria-modal="false" aria-label="Chatbot">
+            <div class="chatbot__header">
+              <div class="chatbot__title">Chat with Nafhan</div>
+              <button class="chatbot__close" aria-label="Close chat">×</button>
+            </div>
+            <div class="chatbot__messages" id="chatbot-messages" aria-live="polite"></div>
+            <form class="chatbot__form" autocomplete="off">
+              <input class="chatbot__input" type="text" name="message" placeholder="Tulis pesan…" aria-label="Message" required />
+              <button class="chatbot__send" type="submit" aria-label="Send">Send</button>
+            </form>
+          </div>
+        </div>
     <script src="./main.js?v=2" defer></script>
 </body>
 </html>
