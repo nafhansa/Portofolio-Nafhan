@@ -112,6 +112,7 @@
   } else setupReveal();
 })();
 
+
 // === Page Intro =====================================
 (function(){
   var reduceMotion = false;
@@ -171,6 +172,7 @@
   }else runIntro();
 })();
 
+
 // === Floating Chatbot (AI-integrated) ================
 (function(){
   var root = document.getElementById('chatbot');
@@ -184,6 +186,9 @@
   var input = panel && panel.querySelector('.chatbot__input');
 
   var STORAGE_KEY = 'chatbot_history_v1';
+
+  // ganti ini kalau nanti ganti nama service
+  var API_BASE = "https://portofolio-nafhan-production.up.railway.app";
 
   function render(role, text){
     var item = document.createElement('div');
@@ -240,28 +245,41 @@
     input.value = '';
     input.focus();
 
-    // tampilkan "mengetik..." bubble
+    // bubble "typing..."
     var typing = document.createElement('div');
     typing.className = 'chat-msg chat-msg--bot typing';
     typing.innerHTML = '<div class="chat-msg__bubble">...</div>';
     list.appendChild(typing);
     list.scrollTop = list.scrollHeight;
 
-    try {
-        const res = await fetch('https://portofolio-nafhan-production.up.railway.app/chat', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: msg })
-        });
+    // helper fetch dengan fallback ke localhost
+    async function sendToAPI(url) {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: msg })
+      });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.json();
+    }
 
-      const data = await res.json();
+    try {
+      // coba ke Railway dulu
+      let data;
+      try {
+        data = await sendToAPI(API_BASE + '/chat');
+      } catch (err) {
+        // kalau gagal (misal kamu lagi develop lokal), coba ke localhost
+        data = await sendToAPI('http://localhost:8080/chat');
+      }
+
       typing.remove();
       render('bot', data.reply);
       history.push({ role:'bot', text: data.reply });
       saveHistory(history);
     } catch (err) {
       typing.remove();
-      render('bot', '⚠️ Gagal terhubung ke server. Pastikan app.py sedang berjalan.');
+      render('bot', '⚠️ Gagal terhubung ke server. Cek URL API atau redeploy Railway.');
     }
   });
 })();

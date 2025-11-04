@@ -2,15 +2,14 @@ import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
-
-from PyPDF2 import PdfReader  # jauh lebih ringan dari langchain loader
-
+from PyPDF2 import PdfReader
 from ibm_watsonx_ai.foundation_models import ModelInference
 
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})
+# kalau mau spesifik:
+CORS(app, resources={r"/*": {"origins": ["https://nafhan.space", "https://www.nafhan.space", "*"]}})
 
 PDF_PATH = "./Nafhan_Profile.pdf"
 
@@ -18,15 +17,12 @@ WATSONX_APIKEY = os.getenv("WATSONX_APIKEY")
 WATSONX_PROJECT_ID = os.getenv("WATSONX_PROJECT_ID")
 WATSONX_URL = os.getenv("WATSONX_URL", "https://jp-tok.ml.cloud.ibm.com")
 
-# kita simpan teks PDF di memori
 PDF_TEXT = ""
 
 
 def load_pdf_text():
-    """Baca seluruh isi PDF jadi satu string."""
     if not os.path.exists(PDF_PATH):
-        raise FileNotFoundError(f"PDF tidak ditemukan di {PDF_PATH}")
-
+      raise FileNotFoundError(f"PDF tidak ditemukan di {PDF_PATH}")
     reader = PdfReader(PDF_PATH)
     pages = []
     for page in reader.pages:
@@ -51,12 +47,12 @@ def get_llm():
     )
 
 
-# load pdf sekali di startup (ini gak berat karena pdf kecil)
 try:
     PDF_TEXT = load_pdf_text()
     print("✅ PDF loaded, length:", len(PDF_TEXT))
 except Exception as e:
     print("⚠️ gagal load PDF:", e)
+    PDF_TEXT = ""
 
 
 @app.route("/", methods=["GET"])
@@ -74,7 +70,6 @@ def chat():
 
     llm = get_llm()
 
-    # prompt-nya simple aja: kasih isi pdf, suruh jawab dari situ
     prompt = f"""
 Kamu adalah asisten yang menjawab HANYA dari dokumen berikut.
 
