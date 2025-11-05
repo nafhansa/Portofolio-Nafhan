@@ -14,18 +14,30 @@ load_dotenv()
 
 app = Flask(__name__)
 
-# izinkan domain kamu + localhost
+# CORS: izinkan frontend prod + semua subdomain Railway + lokal
 CORS(
     app,
-    resources={r"/*": {"origins": [
-        "http://127.0.0.1:8080/",
-        "https://portofolio-nafhan-production.up.railway.app",
-        "https://nafhan.space",
-        "https://www.nafhan.space",
-        "http://localhost:5500",
-        "http://localhost:8080",
-        "http://127.0.0.1:8080",
-    ]}},
+    resources={
+        r"/*": {
+            "origins": [
+                # production domains
+                "https://nafhan.space",
+                "https://www.nafhan.space",
+                "https://portofolio-nafhan-production.up.railway.app",
+                # any Railway preview or custom env under railway.app
+                r"https://.*\\.railway\\.app",
+                # local dev
+                "http://localhost:5500",
+                "http://localhost:8080",
+                "http://127.0.0.1:8080",
+            ],
+            "methods": ["GET", "POST", "OPTIONS"],
+            "allow_headers": ["Content-Type", "Authorization"],
+            "expose_headers": ["Content-Type"],
+            "vary_header": True,
+            "always_send": True,
+        }
+    },
 )
 
 PDF_PATH = "./Nafhan_Profile.pdf"
@@ -88,13 +100,16 @@ print("📄 PDF loaded, length:", len(PDF_TEXT))
 
 @app.after_request
 def add_cors_headers(resp):
-    # jaga-jaga kalau proxy di depan (Railway) buang header
-    origin = request.headers.get("Origin", "*")
-    if origin:
-        resp.headers["Access-Control-Allow-Origin"] = origin
-        resp.headers["Vary"] = "Origin"
-    resp.headers["Access-Control-Allow-Methods"] = "GET,POST,OPTIONS"
-    resp.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
+    # jaga-jaga kalau proxy di depan (Railway) buang header; jangan overwrite kalau sudah ada
+    if "Access-Control-Allow-Origin" not in resp.headers:
+        origin = request.headers.get("Origin")
+        if origin:
+            resp.headers["Access-Control-Allow-Origin"] = origin
+            resp.headers["Vary"] = "Origin"
+    if "Access-Control-Allow-Methods" not in resp.headers:
+        resp.headers["Access-Control-Allow-Methods"] = "GET,POST,OPTIONS"
+    if "Access-Control-Allow-Headers" not in resp.headers:
+        resp.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
     return resp
 
 
