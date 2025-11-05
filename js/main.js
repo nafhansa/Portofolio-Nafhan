@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ganti ke domain Railway kamu
   const API_BASE = window.location.hostname.includes("localhost")
-    ? "http://localhost:8080"
+    ? "https://nafhan.space"
     : "https://portofolio-nafhan-production.up.railway.app";
 
   function render(role, text) {
