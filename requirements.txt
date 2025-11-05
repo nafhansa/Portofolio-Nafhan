@@ -3,3 +3,4 @@ flask-cors
 PyPDF2
 ibm-watsonx-ai
 waitress
+dotenv
