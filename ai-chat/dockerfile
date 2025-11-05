@@ -9,4 +9,3 @@ COPY . .
 
 # dengarkan PORT dari Railway
 CMD ["sh", "-c", "waitress-serve --listen=0.0.0.0:${PORT:-8080} app:app"]
-
