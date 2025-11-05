@@ -14,5 +14,5 @@ COPY . .
 # Ekspos port aplikasi (Railway akan set PORT runtime)
 EXPOSE 8080
 
-# Jalankan langsung pakai Python
-CMD ["python", "app.py"]
+# Jalankan via waitress-serve, mengikuti PORT dari environment Railway
+CMD ["/bin/sh", "-c", "waitress-serve --host=0.0.0.0 --port=${PORT:-8080} app:app"]
