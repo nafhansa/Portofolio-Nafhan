@@ -1,58 +1,56 @@
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
 from dotenv import load_dotenv
 from PyPDF2 import PdfReader
 
-# watsonx (boleh gagal)
-from ibm_watsonx_ai.foundation_models import ModelInference
+# watsonx boleh gagal, makanya kita import tapi nanti siap fallback
+try:
+    from ibm_watsonx_ai.foundation_models import ModelInference
+except Exception:  # biar container tetap jalan
+    ModelInference = None
 
-# ====== load env ======
 load_dotenv()
 
 app = Flask(__name__)
 
-# ====== CORS longgar ======
-# ini udah izinin semua origin
+# izinkan domain kamu + localhost
 CORS(
     app,
-    resources={r"/*": {"origins": "*"}},
-    supports_credentials=False,
+    resources={r"/*": {"origins": [
+        "https://nafhan.space",
+        "https://www.nafhan.space",
+        "http://localhost:5173",
+        "http://localhost:8080",
+        "http://127.0.0.1:8080",
+    ]}},
 )
 
-# kita PAKSA lagi supaya header selalu ada
-@app.after_request
-def add_cors_headers(resp):
-    resp.headers["Access-Control-Allow-Origin"] = "*"
-    resp.headers["Access-Control-Allow-Methods"] = "GET,POST,PUT,DELETE,OPTIONS"
-    resp.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
-    return resp
-
-
-# ====== konfig ======
 PDF_PATH = "./Nafhan_Profile.pdf"
+
 WATSONX_APIKEY = os.getenv("WATSONX_APIKEY")
 WATSONX_PROJECT_ID = os.getenv("WATSONX_PROJECT_ID")
 WATSONX_URL = os.getenv("WATSONX_URL", "https://jp-tok.ml.cloud.ibm.com")
 
-PDF_TEXT = ""   # diisi pas startup
+PDF_TEXT = ""
 
 
-# ====== helper baca pdf ======
 def load_pdf_text() -> str:
     if not os.path.exists(PDF_PATH):
-        raise FileNotFoundError(f"PDF tidak ditemukan di {PDF_PATH}")
-
+        return ""
     reader = PdfReader(PDF_PATH)
-    parts = [(p.extract_text() or "") for p in reader.pages]
+    parts = []
+    for page in reader.pages:
+        parts.append(page.extract_text() or "")
     return "\n".join(parts)
 
 
-# ====== helper watsonx ======
 def get_llm():
+    # kalau library-nya nggak ke-install, langsung balik None
+    if ModelInference is None:
+        return None
     if not (WATSONX_APIKEY and WATSONX_PROJECT_ID):
         return None
-
     return ModelInference(
         model_id="meta-llama/llama-3-3-70b-instruct",
         params={
@@ -67,38 +65,39 @@ def get_llm():
     )
 
 
-# ====== fallback lokal ======
 def simple_answer_from_pdf(question: str, pdf_text: str) -> str:
     q = question.lower()
-
-    if "sekolah" in q or "kuliah" in q:
-        return "Di PDF belum ada info pendidikan. Tambahin di PDF biar aku bisa jawab ya 🙂"
-
-    first_line = pdf_text.strip().split("\n")[0][:300] if pdf_text else ""
-    if first_line:
+    if "siapa" in q or "kenal" in q or "nafhan" in q:
+        return "Ini asisten AI dari portfolio Nafhan. Isi PDF dipakai buat jawab hal-hal tentang dia 🙂"
+    if pdf_text:
+        first = pdf_text.strip().split("\n")[0][:350]
         return (
-            "Aku ambil dari awal PDF kamu ya:\n\n"
-            f"{first_line}\n\n"
-            "(watsonx lagi nggak ke-cover / belum diset env di Railway)"
+            "Ini potongan dari PDF kamu, karena model jarak jauh belum aktif:\n\n"
+            + first
+            + "\n\nAktifkan env WATSONX_xx di Railway biar jawabannya lebih pintar."
         )
-
-    return "Maaf, aku nggak nemu infonya dan layanan AI lagi nggak bisa dipakai."
-
-
-# ====== startup: baca pdf ======
-try:
-    PDF_TEXT = load_pdf_text()
-    print("✅ PDF loaded, length:", len(PDF_TEXT))
-except Exception as e:
-    print("⚠️ gagal load PDF:", e)
-    PDF_TEXT = ""
+    return "Maaf, PDF belum ke-load dan watsonx belum aktif."
 
 
-# ====== routes ======
+# load PDF pas startup
+PDF_TEXT = load_pdf_text()
+print("📄 PDF loaded, length:", len(PDF_TEXT))
+
+
+@app.after_request
+def add_cors_headers(resp):
+    # jaga-jaga kalau proxy di depan (Railway) buang header
+    origin = request.headers.get("Origin", "*")
+    if origin:
+        resp.headers["Access-Control-Allow-Origin"] = origin
+        resp.headers["Vary"] = "Origin"
+    resp.headers["Access-Control-Allow-Methods"] = "GET,POST,OPTIONS"
+    resp.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
+    return resp
+
+
 @app.route("/health", methods=["GET"])
 def health():
-    # akses di browser: https://...railway.app/health
-    # HARUS balikin header CORS juga
     return jsonify({"status": "ok"}), 200
 
 
@@ -109,14 +108,12 @@ def home():
 
 @app.route("/chat", methods=["POST", "OPTIONS"])
 def chat():
-    # browser kirim OPTIONS (preflight)
+    # handle preflight
     if request.method == "OPTIONS":
-        # header CORS sudah ditambahin di after_request
-        return "", 204
+        return make_response("", 204)
 
     data = request.get_json(silent=True) or {}
     question = (data.get("message") or "").strip()
-
     if not question:
         return jsonify({"reply": "Pertanyaannya kosong."}), 200
 
@@ -131,30 +128,27 @@ Kamu adalah asisten yang hanya boleh menjawab dari dokumen berikut.
 
 Pertanyaan pengguna: "{question}"
 
-Jika di dokumen tidak ada jawabannya, jawab pakai kalimat ini:
-"Maaf, di PDF saya tidak menemukan info itu."
-
-Jawab dalam bahasa Indonesia yang rapi, maksimal 2 paragraf.
+Jika di dokumen tidak ada jawabannya, jawab: "Maaf, di PDF saya tidak menemukan info itu."
+Jawab dengan bahasa Indonesia, rapi, maksimal 2 paragraf.
 """.strip()
 
-    # kalau watsonx belum di-set → fallback
+    # kalau tidak ada LLM ➜ fallback
     if llm is None:
         fallback = simple_answer_from_pdf(question, PDF_TEXT)
         return jsonify({"reply": fallback}), 200
 
-    # kalau watsonx ada → coba panggil
     try:
         answer = llm.generate_text(prompt)
         return jsonify({"reply": answer}), 200
     except Exception as e:
         fallback = simple_answer_from_pdf(question, PDF_TEXT)
-        return jsonify({
-            "reply": f"{fallback}\n\n(catatan: watsonx error: {e})"
-        }), 200
+        return jsonify({"reply": f"{fallback}\n\n(catatan: watsonx error: {e})"}), 200
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8080))
-    # pakai waitress kalau mau: `waitress-serve --host=0.0.0.0 --port=8080 app:app`
+    # jalankan dengan waitress di lokal juga boleh
     from waitress import serve
+
+    port = int(os.environ.get("PORT", 8080))
+    print(f"🚀 serving on 0.0.0.0:{port}")
     serve(app, host="0.0.0.0", port=port)
