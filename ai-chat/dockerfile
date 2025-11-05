@@ -1,11 +1,15 @@
-FROM python:3.13-slim
+FROM python:3.11-slim
 
 WORKDIR /app
 
+# install deps dulu
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# copy source + pdf
 COPY . .
 
-# dengarkan PORT dari Railway
-CMD ["sh", "-c", "waitress-serve --listen=0.0.0.0:${PORT:-8080} app:app"]
+ENV PORT=8080
+
+# run pakai waitress
+CMD ["waitress-serve", "--host=0.0.0.0", "--port=8080", "app:app"]

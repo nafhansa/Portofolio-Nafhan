@@ -4,25 +4,23 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 from PyPDF2 import PdfReader
 
-# watsonx (boleh gagal, nanti kita fallback)
+# watsonx (boleh gagal)
 from ibm_watsonx_ai.foundation_models import ModelInference
 
+# ====== load env ======
 load_dotenv()
 
 app = Flask(__name__)
 
-# =========================
-# CORS PALING LONGGAR
-# =========================
-# ini udah cukup untuk kebanyakan kasus
+# ====== CORS longgar ======
+# ini udah izinin semua origin
 CORS(
     app,
     resources={r"/*": {"origins": "*"}},
-    supports_credentials=False
+    supports_credentials=False,
 )
 
-# kalau kamu mau 100% pasti headernya ada,
-# kita tambahin after_request juga
+# kita PAKSA lagi supaya header selalu ada
 @app.after_request
 def add_cors_headers(resp):
     resp.headers["Access-Control-Allow-Origin"] = "*"
@@ -31,36 +29,30 @@ def add_cors_headers(resp):
     return resp
 
 
-# =========================
-# KONFIG
-# =========================
+# ====== konfig ======
 PDF_PATH = "./Nafhan_Profile.pdf"
-
 WATSONX_APIKEY = os.getenv("WATSONX_APIKEY")
 WATSONX_PROJECT_ID = os.getenv("WATSONX_PROJECT_ID")
 WATSONX_URL = os.getenv("WATSONX_URL", "https://jp-tok.ml.cloud.ibm.com")
 
-PDF_TEXT = ""  # diisi pas startup
+PDF_TEXT = ""   # diisi pas startup
 
 
-# =========================
-# HELPER: baca PDF
-# =========================
+# ====== helper baca pdf ======
 def load_pdf_text() -> str:
     if not os.path.exists(PDF_PATH):
         raise FileNotFoundError(f"PDF tidak ditemukan di {PDF_PATH}")
 
     reader = PdfReader(PDF_PATH)
-    pages = [(p.extract_text() or "") for p in reader.pages]
-    return "\n".join(pages)
+    parts = [(p.extract_text() or "") for p in reader.pages]
+    return "\n".join(parts)
 
 
-# =========================
-# HELPER: watsonx
-# =========================
+# ====== helper watsonx ======
 def get_llm():
     if not (WATSONX_APIKEY and WATSONX_PROJECT_ID):
         return None
+
     return ModelInference(
         model_id="meta-llama/llama-3-3-70b-instruct",
         params={
@@ -75,25 +67,25 @@ def get_llm():
     )
 
 
-# =========================
-# HELPER: fallback lokal
-# =========================
+# ====== fallback lokal ======
 def simple_answer_from_pdf(question: str, pdf_text: str) -> str:
     q = question.lower()
 
     if "sekolah" in q or "kuliah" in q:
         return "Di PDF belum ada info pendidikan. Tambahin di PDF biar aku bisa jawab ya 🙂"
 
-    first = pdf_text.strip().split("\n")[0][:300] if pdf_text else ""
-    if first:
-        return f"Aku nemu ini di PDF kamu:\n\n{first}\n\n(watsonx belum aktif / error, jadi aku kasih yang ada aja)"
+    first_line = pdf_text.strip().split("\n")[0][:300] if pdf_text else ""
+    if first_line:
+        return (
+            "Aku ambil dari awal PDF kamu ya:\n\n"
+            f"{first_line}\n\n"
+            "(watsonx lagi nggak ke-cover / belum diset env di Railway)"
+        )
 
-    return "Maaf, aku gak nemu infonya dan layanan AI lagi gak bisa dipakai."
+    return "Maaf, aku nggak nemu infonya dan layanan AI lagi nggak bisa dipakai."
 
 
-# =========================
-# STARTUP: baca PDF
-# =========================
+# ====== startup: baca pdf ======
 try:
     PDF_TEXT = load_pdf_text()
     print("✅ PDF loaded, length:", len(PDF_TEXT))
@@ -102,12 +94,11 @@ except Exception as e:
     PDF_TEXT = ""
 
 
-# =========================
-# ROUTES
-# =========================
+# ====== routes ======
 @app.route("/health", methods=["GET"])
 def health():
-    # endpoint buat test dari browser
+    # akses di browser: https://...railway.app/health
+    # HARUS balikin header CORS juga
     return jsonify({"status": "ok"}), 200
 
 
@@ -118,13 +109,13 @@ def home():
 
 @app.route("/chat", methods=["POST", "OPTIONS"])
 def chat():
-    # browser akan kirim OPTIONS dulu → kita jawab aja
+    # browser kirim OPTIONS (preflight)
     if request.method == "OPTIONS":
-        # header CORS udah ditambahin di after_request
+        # header CORS sudah ditambahin di after_request
         return "", 204
 
-    payload = request.get_json(silent=True) or {}
-    question = (payload.get("message") or "").strip()
+    data = request.get_json(silent=True) or {}
+    question = (data.get("message") or "").strip()
 
     if not question:
         return jsonify({"reply": "Pertanyaannya kosong."}), 200
@@ -146,11 +137,12 @@ Jika di dokumen tidak ada jawabannya, jawab pakai kalimat ini:
 Jawab dalam bahasa Indonesia yang rapi, maksimal 2 paragraf.
 """.strip()
 
-    # kalau watsonx belum diset
+    # kalau watsonx belum di-set → fallback
     if llm is None:
         fallback = simple_answer_from_pdf(question, PDF_TEXT)
         return jsonify({"reply": fallback}), 200
 
+    # kalau watsonx ada → coba panggil
     try:
         answer = llm.generate_text(prompt)
         return jsonify({"reply": answer}), 200
@@ -163,5 +155,6 @@ Jawab dalam bahasa Indonesia yang rapi, maksimal 2 paragraf.
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
-    # penting: Railway dengerin 0.0.0.0
-    app.run(host="0.0.0.0", port=port)
+    # pakai waitress kalau mau: `waitress-serve --host=0.0.0.0 --port=8080 app:app`
+    from waitress import serve
+    serve(app, host="0.0.0.0", port=port)
