@@ -11,8 +11,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy semua file project (termasuk PDF)
 COPY . .
 
-# Set environment variable untuk Railway
-ENV PORT=8080
+# Ekspos port aplikasi (Railway akan set PORT runtime)
+EXPOSE 8080
 
 # Jalankan langsung pakai Python
 CMD ["python", "app.py"]
