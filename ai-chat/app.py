@@ -6,23 +6,7 @@ from ibm_watsonx_ai.foundation_models import ModelInference
 
 app = Flask(__name__)
 
-CORS(
-    app,
-    resources={
-        r"/*": {
-            "origins": [
-                "https://nafhan.space",
-                "https://www.nafhan.space",
-                "https://portofolio-nafhan-production.up.railway.app",
-                "http://localhost:5173",
-                "http://localhost:8080",
-                "http://127.0.0.1:8080",
-            ],
-            "allow_headers": ["Content-Type", "Authorization"],
-            "methods": ["GET", "POST", "OPTIONS"],
-        }
-    },
-)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PDF_PATH = os.path.join(BASE_DIR, "Nafhan_Profile.pdf")
