@@ -1,6 +1,6 @@
-flask
-flask-cors
-PyPDF2
-ibm-watsonx-ai
-waitress
-dotenv
+Flask==3.0.3
+flask-cors==4.0.1
+python-dotenv==1.0.1
+PyPDF2==3.0.1
+ibm-watsonx-ai==1.1.0
+waitress==3.0.0
