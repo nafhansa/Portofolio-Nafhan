@@ -1,6 +1,0 @@
-flask
-waitress
-flask-cors
-python-dotenv
-PyPDF2
-ibm-watsonx-ai

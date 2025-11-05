@@ -1,15 +1,18 @@
+# Gunakan base image Python
 FROM python:3.11-slim
 
+# Set working directory
 WORKDIR /app
 
-# install deps dulu
+# Copy requirements dan install dependensi
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# copy source + pdf
+# Copy semua file project (termasuk PDF)
 COPY . .
 
+# Set environment variable untuk Railway
 ENV PORT=8080
 
-# run pakai waitress
-CMD ["waitress-serve", "--host=0.0.0.0", "--port=8080", "app:app"]
+# Jalankan langsung pakai Python
+CMD ["python", "app.py"]

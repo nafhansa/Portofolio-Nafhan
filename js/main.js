@@ -13,10 +13,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const input = document.querySelector(".chatbot__input");
   const messages = document.getElementById("chatbot-messages");
 
-  // ganti ke domain Railway kamu
-  const API_BASE = window.location.hostname.includes("localhost")
-    ? "https://nafhan.space"
-    : "https://portofolio-nafhan-production.up.railway.app";
+  const isLocal = ["localhost", "127.0.0.1", "::1"].includes(window.location.hostname);
+
+  const API_BASE = isLocal
+    ? "http://127.0.0.1:8080" // lokal (tanpa HTTPS)
+    : "https://portofolio-nafhan-production.up.railway.app"; // produksi
+  console.log("🤖 Chatbot API base URL:", API_BASE);
+
 
   function render(role, text) {
     const msg = document.createElement("div");
