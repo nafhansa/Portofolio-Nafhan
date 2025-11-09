@@ -60,11 +60,18 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log("➡️ sending to:", `${API_BASE}/chat`);
       const res = await fetch(`${API_BASE}/chat`, {
         method: "POST",
+        mode: "cors",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: msg }),
+        redirect: "follow",
+        cache: "no-store",
       });
 
       // kalau CORS masih salah, bagian ini nggak pernah kepanggil
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(`HTTP ${res.status} ${res.statusText} ${text}`);
+      }
       const data = await res.json();
       typing.remove();
       render("bot", data.reply || "Tidak ada respon dari server.");
