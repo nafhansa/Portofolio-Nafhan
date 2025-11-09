@@ -61,8 +61,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const res = await fetch(`${API_BASE}/chat`, {
         method: "POST",
         mode: "cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: msg }),
+        headers: { "Content-Type": "text/plain;charset=UTF-8" },
+        body: msg,
         redirect: "follow",
         cache: "no-store",
       });

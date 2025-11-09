@@ -1,4 +1,5 @@
 import os
+import json
 from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
 from dotenv import load_dotenv
@@ -85,6 +86,13 @@ PDF_TEXT = load_pdf_text()
 print("📄 PDF loaded, length:", len(PDF_TEXT))
 
 
+@app.before_request
+def global_preflight_handler():
+    # Pastikan semua preflight (OPTIONS) dibalas 204, agar proxy di depan tidak error 502
+    if request.method == "OPTIONS":
+        return make_response("", 204)
+
+
 @app.after_request
 def add_cors_headers(resp):
     # jaga-jaga kalau proxy di depan (Railway) buang header; jangan overwrite kalau sudah ada
@@ -119,7 +127,18 @@ def chat():
     if request.method == "OPTIONS":
         return make_response("", 204)
 
-    data = request.get_json(silent=True) or {}
+    # Terima application/json atau text/plain (untuk menghindari preflight CORS)
+    data = request.get_json(silent=True)
+    if not data:
+        raw = request.get_data(as_text=True) or ""
+        if raw.strip().startswith("{"):
+            try:
+                data = json.loads(raw)
+            except Exception:
+                data = {"message": raw.strip()}
+        else:
+            data = {"message": raw.strip()}
+
     question = (data.get("message") or "").strip()
     if not question:
         return jsonify({"reply": "Pertanyaannya kosong."}), 200
