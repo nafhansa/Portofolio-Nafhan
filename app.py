@@ -158,7 +158,6 @@ Jika di dokumen tidak ada jawabannya, jawab: "Maaf, di PDF saya tidak menemukan 
 Jawab dengan bahasa Indonesia, rapi, maksimal 2 paragraf.
 """.strip()
 
-    # kalau tidak ada LLM ➜ fallback
     if llm is None:
         fallback = simple_answer_from_pdf(question, PDF_TEXT)
         return jsonify({"reply": fallback}), 200
@@ -172,9 +171,8 @@ Jawab dengan bahasa Indonesia, rapi, maksimal 2 paragraf.
 
 
 if __name__ == "__main__":
-    # jalankan dengan waitress di lokal juga boleh
     from waitress import serve
 
-    port = int(os.environ.get("PORT", 8080))
+    port = int(os.environ.get("PORT", 9999))
     print(f"🚀 serving on 0.0.0.0:{port}")
     serve(app, host="0.0.0.0", port=port)
